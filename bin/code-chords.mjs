@@ -148,7 +148,7 @@ function escapeHtml(str) {
 // -------------------------------------------------------------
 // ANALIZADOR LÉXICO/SINTÁCTICO DE CÓDIGO JAVA
 // -------------------------------------------------------------
-export function scanJavaSource(filePaths) {
+function scanJavaSource(filePaths) {
   const nodes = [];
   const connections = [];
 
@@ -271,6 +271,16 @@ export function scanJavaSource(filePaths) {
     // 1. Herencia de clase (`extends`)
     if (node.superClass && classMap.has(node.superClass)) {
       const superNode = classMap.get(node.superClass);
+
+      // Conexión a nivel de clase
+      connections.push({
+        source: node.id,
+        target: superNode.id,
+        type: 'inheritance',
+        label: `extends ${superNode.label || superNode.id}`,
+        snippet: `class ${node.id} extends ${superNode.id}`
+      });
+
       const childCtor = node.members.find(m => m.kind === 'constructor');
       const superCtor = superNode.members.find(m => m.kind === 'constructor');
 
@@ -474,83 +484,95 @@ export function scanJavaSource(filePaths) {
   };
 }
 
-// -------------------------------------------------------------
-// ENTRADA PRINCIPAL DE LÍNEA DE COMANDOS
-// -------------------------------------------------------------
-const args = process.argv.slice(2);
-if (args.length === 0) {
-  printUsage();
-  process.exit(0);
-}
-
-const command = args[0];
-
-if (command === 'validate') {
-  const jsonPath = args[1];
-  if (!jsonPath) {
-    console.error('Debes especificar la ruta del archivo JSON que validar.');
-    process.exit(1);
+function runCli(args = process.argv.slice(2)) {
+  if (args.length === 0) {
+    printUsage();
+    process.exit(0);
   }
-  const raw = fs.readFileSync(path.resolve(process.cwd(), jsonPath), 'utf-8');
-  const data = JSON.parse(raw);
-  const result = validateSpecification(data);
 
-  if (result.valid) {
-    console.log('Validación exitosa: la especificación es correcta.');
-    console.log(`Nodos: ${result.stats.nodesCount} | Miembros: ${result.stats.membersCount} | Conexiones: ${result.stats.connectionsCount}`);
-  } else {
-    console.error('Se encontraron errores en la especificación:');
-    result.errors.forEach(e => console.error(`  - ${e}`));
-    process.exit(1);
-  }
-} else if (command === 'render') {
-  const jsonPath = args[1];
-  const outPath = args[2] || 'diagrama.html';
-  if (!jsonPath) {
-    console.error('Debes indicar el archivo JSON de entrada.');
-    process.exit(1);
-  }
-  const raw = fs.readFileSync(path.resolve(process.cwd(), jsonPath), 'utf-8');
-  const data = JSON.parse(raw);
-  renderDiagram(data, outPath);
-} else if (command === 'scan-java') {
-  const javaFiles = [];
-  let outJson = null;
-  let renderHtml = null;
+  const command = args[0];
 
-  for (let i = 1; i < args.length; i++) {
-    if (args[i] === '--out' && args[i + 1]) {
-      outJson = args[i + 1];
-      i++;
-    } else if (args[i] === '--render' && args[i + 1]) {
-      renderHtml = args[i + 1];
-      i++;
-    } else if (args[i].endsWith('.java')) {
-      javaFiles.push(path.resolve(process.cwd(), args[i]));
+  if (command === 'validate') {
+    const jsonPath = args[1];
+    if (!jsonPath) {
+      console.error('Debes especificar la ruta del archivo JSON que validar.');
+      process.exit(1);
     }
-  }
+    const raw = fs.readFileSync(path.resolve(process.cwd(), jsonPath), 'utf-8');
+    const data = JSON.parse(raw);
+    const result = validateSpecification(data);
 
-  if (javaFiles.length === 0) {
-    console.error('Debes proporcionar al menos un archivo .java para escanear.');
+    if (result.valid) {
+      console.log('Validación exitosa: la especificación es correcta.');
+      console.log(`Nodos: ${result.stats.nodesCount} | Miembros: ${result.stats.membersCount} | Conexiones: ${result.stats.connectionsCount}`);
+    } else {
+      console.error('Se encontraron errores en la especificación:');
+      result.errors.forEach(e => console.error(`  - ${e}`));
+      process.exit(1);
+    }
+  } else if (command === 'render') {
+    const jsonPath = args[1];
+    const outPath = args[2] || 'diagrama.html';
+    if (!jsonPath) {
+      console.error('Debes indicar el archivo JSON de entrada.');
+      process.exit(1);
+    }
+    const raw = fs.readFileSync(path.resolve(process.cwd(), jsonPath), 'utf-8');
+    const data = JSON.parse(raw);
+    renderDiagram(data, outPath);
+  } else if (command === 'scan-java') {
+    const javaFiles = [];
+    let outJson = null;
+    let renderHtml = null;
+
+    for (let i = 1; i < args.length; i++) {
+      if (args[i] === '--out' && args[i + 1]) {
+        outJson = args[i + 1];
+        i++;
+      } else if (args[i] === '--render' && args[i + 1]) {
+        renderHtml = args[i + 1];
+        i++;
+      } else if (args[i].endsWith('.java')) {
+        javaFiles.push(path.resolve(process.cwd(), args[i]));
+      }
+    }
+
+    if (javaFiles.length === 0) {
+      console.error('Debes proporcionar al menos un archivo .java para escanear.');
+      process.exit(1);
+    }
+
+    const spec = scanJavaSource(javaFiles);
+
+    if (outJson) {
+      fs.writeFileSync(path.resolve(process.cwd(), outJson), JSON.stringify(spec, null, 2), 'utf-8');
+      console.log(`Especificación JSON guardada en: ${outJson}`);
+    }
+
+    if (renderHtml) {
+      renderDiagram(spec, renderHtml);
+    }
+
+    if (!outJson && !renderHtml) {
+      console.log(JSON.stringify(spec, null, 2));
+    }
+  } else {
+    console.error(`Comando desconocido: ${command}`);
+    printUsage();
     process.exit(1);
   }
-
-  const spec = scanJavaSource(javaFiles);
-
-  if (outJson) {
-    fs.writeFileSync(path.resolve(process.cwd(), outJson), JSON.stringify(spec, null, 2), 'utf-8');
-    console.log(`Especificación JSON guardada en: ${outJson}`);
-  }
-
-  if (renderHtml) {
-    renderDiagram(spec, renderHtml);
-  }
-
-  if (!outJson && !renderHtml) {
-    console.log(JSON.stringify(spec, null, 2));
-  }
-} else {
-  console.error(`Comando desconocido: ${command}`);
-  printUsage();
-  process.exit(1);
 }
+
+export {
+  validateSpecification,
+  renderDiagram,
+  scanJavaSource,
+  printUsage,
+  runCli
+};
+
+const isDirectExecution = process.argv[1] && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
+if (isDirectExecution) {
+  runCli();
+}
+

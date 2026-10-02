@@ -1,6 +1,9 @@
 # Code-Chords
 
 [![Demostración en vivo](https://img.shields.io/badge/Demo_en_vivo-ferb22.github.io%2Fcode--chords-22c55e?style=for-the-badge&logo=githubpages&logoColor=white)](https://ferb22.github.io/code-chords/)
+[![CI](https://github.com/FerB22/code-chords/actions/workflows/ci.yml/badge.svg)](https://github.com/FerB22/code-chords/actions/workflows/ci.yml)
+[![Node.js](https://img.shields.io/badge/Node.js->=18.0.0-339933?logo=node.js&logoColor=white)](package.json)
+[![Licencia MIT](https://img.shields.io/badge/Licencia-MIT-blue.svg)](LICENSE)
 
 Generador y visor interactivo autónomo (HTML/SVG) para visualizar **conexiones relacionales a escala atómica** en arquitecturas de software, sistemas distribuidos, capas de aplicación y código fuente. Inspirado en la visualización bíblica de referencias cruzadas y en el contrapunto polifónico.
 
@@ -174,6 +177,24 @@ Para integrar `code-chords` como habilidad en tu agente de inteligencia artifici
 1. Copia el directorio completo en la ruta de habilidades:
    `~/.gemini/config/plugins/custom-skills/skills/code-chords` (o en `.claude/skills/code-chords`).
 2. El agente detectará automáticamente el archivo `SKILL.md` y podrá invocar el comando `node <skill-path>/bin/code-chords.mjs` cada vez que solicites visualizar arquitecturas, jerarquías de herencia o trazas relacionales de software.
+
+---
+
+## Pruebas automatizadas
+
+El proyecto incluye una suite completa de pruebas unitarias y de integración que verifica la validación de esquemas, la consistencia de los analizadores de código fuente y la generación del visor HTML:
+
+```bash
+npm test
+```
+
+---
+
+## Contribuciones
+
+Las contribuciones son bienvenidas para ampliar analizadores a otros lenguajes (TypeScript, Python, C#), optimizar el rendimiento del renderizado SVG o proponer nuevas disposiciones visuales.
+
+Por favor, revisa nuestra [Guía de contribución](CONTRIBUTING.md) y el [Código de conducta](CODE_OF_CONDUCT.md) antes de abrir una solicitud de extracción (*Pull Request*).
 
 ---
 

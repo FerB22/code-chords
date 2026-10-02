@@ -8,6 +8,7 @@
     "code-chords": "./bin/code-chords.mjs"
   },
   "scripts": {
+    "test": "node --test tests/**/*.test.js",
     "validate": "node bin/code-chords.mjs validate",
     "render": "node bin/code-chords.mjs render",
     "scan": "node bin/code-chords.mjs scan-java"
