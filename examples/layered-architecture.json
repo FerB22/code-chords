@@ -1,0 +1,109 @@
+{
+  "title": "Arquitectura en capas MVC / DAO (Flujo de registro y persistencia)",
+  "description": "Traza de interacciones relacionales desde el controlador HTTP hasta la base de datos JDBC.",
+  "defaultView": "blocks",
+  "nodes": [
+    {
+      "id": "UsuarioController",
+      "label": "UsuarioController",
+      "type": "controller",
+      "members": [
+        {
+          "id": "UsuarioController.registrar",
+          "name": "registrar(req: HttpRequest): HttpResponse",
+          "kind": "method",
+          "visibility": "public"
+        }
+      ]
+    },
+    {
+      "id": "UsuarioService",
+      "label": "UsuarioService",
+      "type": "service",
+      "members": [
+        {
+          "id": "UsuarioService.crearUsuario",
+          "name": "crearUsuario(dto: UsuarioDTO): boolean",
+          "kind": "method",
+          "visibility": "public"
+        },
+        {
+          "id": "UsuarioService.validar",
+          "name": "validar(dto: UsuarioDTO): void",
+          "kind": "method",
+          "visibility": "private"
+        }
+      ]
+    },
+    {
+      "id": "UsuarioDAO",
+      "label": "UsuarioDAO",
+      "type": "dao",
+      "members": [
+        {
+          "id": "UsuarioDAO.insertar",
+          "name": "insertar(usuario: Usuario): int",
+          "kind": "method",
+          "visibility": "public"
+        }
+      ]
+    },
+    {
+      "id": "BaseDeDatos",
+      "label": "Oracle / PostgreSQL",
+      "type": "database",
+      "members": [
+        {
+          "id": "BaseDeDatos.tablaUsuarios",
+          "name": "TABLA usuarios (id, nombre, email)",
+          "kind": "constant",
+          "visibility": "public"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "source": "UsuarioController.registrar",
+      "target": "UsuarioService.crearUsuario",
+      "type": "call",
+      "label": "invoca con datos del DTO desestructurado"
+    },
+    {
+      "source": "UsuarioService.crearUsuario",
+      "target": "UsuarioService.validar",
+      "type": "call",
+      "label": "aplica reglas de negocio y valida restricciones"
+    },
+    {
+      "source": "UsuarioService.crearUsuario",
+      "target": "UsuarioDAO.insertar",
+      "type": "call",
+      "label": "entrega entidad de dominio a la capa de persistencia"
+    },
+    {
+      "source": "UsuarioDAO.insertar",
+      "target": "BaseDeDatos.tablaUsuarios",
+      "type": "dataflow",
+      "label": "INSERT INTO usuarios VALUES (?, ?, ?)"
+    },
+    {
+      "source": "BaseDeDatos.tablaUsuarios",
+      "target": "UsuarioDAO.insertar",
+      "type": "return",
+      "label": "filas afectadas / ID generado"
+    },
+    {
+      "source": "UsuarioDAO.insertar",
+      "target": "UsuarioService.crearUsuario",
+      "type": "return",
+      "label": "confirmación de inserción (int > 0)"
+    },
+    {
+      "source": "UsuarioService.crearUsuario",
+      "target": "UsuarioController.registrar",
+      "type": "return",
+      "label": "true (201 Created)"
+    }
+  ]
+}

@@ -1,0 +1,180 @@
+{
+  "title": "Diagrama relacional de código Java (Persona.java, Empleado.java, Main.java)",
+  "description": "Generado automáticamente por el escáner de Code-Chords para las clases: Persona, Empleado, Main.",
+  "defaultView": "blocks",
+  "nodes": [
+    {
+      "id": "Persona",
+      "label": "Persona",
+      "type": "class",
+      "snippet": "package ejemplos;\n\npublic class Persona {\n    protected String nombre;\n    protected int edad;\n\n    public Persona(String nombre, int edad) {\n        this.nombre = nombre;\n        this.edad = edad;\n    }\n\n    public String getNombre() {\n        return this.nombre;\n    }\n\n    public void presentarse() {\n        System.out.println(\"Hola, soy \" + this.nombre);\n    }\n}\n",
+      "members": [
+        {
+          "id": "Persona.nombre",
+          "name": "nombre: String",
+          "kind": "attribute",
+          "visibility": "protected",
+          "snippet": "protected String nombre;"
+        },
+        {
+          "id": "Persona.edad",
+          "name": "edad: int",
+          "kind": "attribute",
+          "visibility": "protected",
+          "snippet": "protected int edad;"
+        },
+        {
+          "id": "Persona.<init>",
+          "name": "Persona(String nombre, int edad)",
+          "kind": "constructor",
+          "visibility": "public",
+          "snippet": "public Persona(String nombre, int edad) {\n        this.nombre = nombre;\n        this.edad = edad;\n    }"
+        },
+        {
+          "id": "Persona.getNombre",
+          "name": "getNombre(): String",
+          "kind": "method",
+          "visibility": "public",
+          "snippet": "public String getNombre() {\n        return this.nombre;\n    }"
+        },
+        {
+          "id": "Persona.presentarse",
+          "name": "presentarse(): void",
+          "kind": "method",
+          "visibility": "public",
+          "snippet": "public void presentarse() {\n        System.out.println(\"Hola, soy \" + this.nombre);\n    }"
+        }
+      ]
+    },
+    {
+      "id": "Empleado",
+      "label": "Empleado",
+      "type": "class",
+      "snippet": "package ejemplos;\n\npublic class Empleado extends Persona {\n    private String puesto;\n\n    public Empleado(String nombre, int edad, String puesto) {\n        super(nombre, edad);\n        this.puesto = puesto;\n    }\n\n    public String getPuesto() {\n        return this.puesto;\n    }\n\n    @Override\n    public void presentarse() {\n        System.out.println(\"Soy \" + this.nombre + \", trabajo como \" + this.puesto);\n    }\n}\n",
+      "members": [
+        {
+          "id": "Empleado.puesto",
+          "name": "puesto: String",
+          "kind": "attribute",
+          "visibility": "private",
+          "snippet": "private String puesto;"
+        },
+        {
+          "id": "Empleado.<init>",
+          "name": "Empleado(String nombre, int edad, String puesto)",
+          "kind": "constructor",
+          "visibility": "public",
+          "snippet": "public Empleado(String nombre, int edad, String puesto) {\n        super(nombre, edad);\n        this.puesto = puesto;\n    }"
+        },
+        {
+          "id": "Empleado.getPuesto",
+          "name": "getPuesto(): String",
+          "kind": "method",
+          "visibility": "public",
+          "snippet": "public String getPuesto() {\n        return this.puesto;\n    }"
+        },
+        {
+          "id": "Empleado.presentarse",
+          "name": "presentarse(): void",
+          "kind": "method",
+          "visibility": "public",
+          "snippet": "@Override\npublic void presentarse() {\n        System.out.println(\"Soy \" + this.nombre + \", trabajo como \" + this.puesto);\n    }"
+        }
+      ]
+    },
+    {
+      "id": "Main",
+      "label": "Main",
+      "type": "main",
+      "snippet": "package ejemplos;\n\npublic class Main {\n    public static void main(String[] args) {\n        Empleado emp = new Empleado(\"Carlos\", 28, \"Desarrollador\");\n        emp.presentarse();\n        String nombre = emp.getNombre();\n        System.out.println(\"Nombre obtenido: \" + nombre);\n    }\n}\n",
+      "members": [
+        {
+          "id": "Main.emp",
+          "name": "emp: Empleado",
+          "kind": "attribute",
+          "visibility": "package",
+          "snippet": "Empleado emp = new Empleado(\"Carlos\", 28, \"Desarrollador\");"
+        },
+        {
+          "id": "Main.nombre",
+          "name": "nombre: String",
+          "kind": "attribute",
+          "visibility": "package",
+          "snippet": "String nombre = emp.getNombre();"
+        },
+        {
+          "id": "Main.main",
+          "name": "main(String[] args): void",
+          "kind": "method",
+          "visibility": "public",
+          "snippet": "public static void main(String[] args) {\n        Empleado emp = new Empleado(\"Carlos\", 28, \"Desarrollador\");\n        emp.presentarse();\n        String nombre = emp.getNombre();\n        System.out.println(\"Nombre obtenido: \" + nombre);\n    }"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "source": "Empleado.<init>",
+      "target": "Persona.<init>",
+      "type": "inheritance",
+      "label": "invoca constructor super(...)",
+      "snippet": "super(nombre, edad);"
+    },
+    {
+      "source": "Empleado.presentarse",
+      "target": "Persona.presentarse",
+      "type": "inheritance",
+      "label": "@Override sobreescribe presentarse()",
+      "snippet": "@Override\npublic void presentarse() {\n        System.out.println(\"Soy \" + this.nombre + \", trabajo como \" + this.puesto);\n    }"
+    },
+    {
+      "source": "Persona.nombre",
+      "target": "Empleado.<init>",
+      "type": "dataflow",
+      "label": "atributo heredado consumido en Empleado",
+      "snippet": "protected String nombre; -> usado en Empleado"
+    },
+    {
+      "source": "Persona.nombre",
+      "target": "Empleado.presentarse",
+      "type": "dataflow",
+      "label": "atributo heredado consumido en presentarse()",
+      "snippet": "protected String nombre; -> usado en presentarse()"
+    },
+    {
+      "source": "Persona.edad",
+      "target": "Empleado.<init>",
+      "type": "dataflow",
+      "label": "atributo heredado consumido en Empleado",
+      "snippet": "protected int edad; -> usado en Empleado"
+    },
+    {
+      "source": "Empleado.<init>",
+      "target": "Main.emp",
+      "type": "instantiation",
+      "label": "new Empleado() entrega instancia a 'emp'",
+      "snippet": "Empleado emp = new Empleado(\"Carlos\", 28, \"Desarrollador\");"
+    },
+    {
+      "source": "Main.emp",
+      "target": "Persona.getNombre",
+      "type": "call",
+      "label": "'emp' invoca getNombre()",
+      "snippet": "String nombre = emp.getNombre();"
+    },
+    {
+      "source": "Persona.getNombre",
+      "target": "Main.nombre",
+      "type": "return",
+      "label": "retorna valor a 'nombre'",
+      "snippet": "nombre = emp.getNombre(...);"
+    },
+    {
+      "source": "Main.emp",
+      "target": "Empleado.presentarse",
+      "type": "call",
+      "label": "'emp' invoca presentarse()",
+      "snippet": "emp.presentarse();"
+    }
+  ]
+}

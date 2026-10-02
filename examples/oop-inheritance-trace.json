@@ -1,0 +1,126 @@
+{
+  "title": "Jerarquía de herencia y flujo de datos (Clase Padre, Hija y Main)",
+  "description": "Diagrama de arcos de conexión relacional modelando la traza de atributos, constructores super(), sobreescritura e invocación desde Main.",
+  "defaultView": "blocks",
+  "nodes": [
+    {
+      "id": "ClasePadre",
+      "label": "Clase P (Padre)",
+      "type": "class",
+      "members": [
+        {
+          "id": "ClasePadre.nombre",
+          "name": "nombre: String",
+          "kind": "attribute",
+          "visibility": "protected"
+        },
+        {
+          "id": "ClasePadre.init",
+          "name": "ClasePadre(nombre: String)",
+          "kind": "constructor",
+          "visibility": "public"
+        },
+        {
+          "id": "ClasePadre.getNombre",
+          "name": "getNombre(): String",
+          "kind": "method",
+          "visibility": "public"
+        },
+        {
+          "id": "ClasePadre.mostrarDetalle",
+          "name": "mostrarDetalle(): void",
+          "kind": "method",
+          "visibility": "public"
+        }
+      ]
+    },
+    {
+      "id": "ClaseHija",
+      "label": "Clase H (Hija)",
+      "type": "class",
+      "members": [
+        {
+          "id": "ClaseHija.departamento",
+          "name": "departamento: String",
+          "kind": "attribute",
+          "visibility": "private"
+        },
+        {
+          "id": "ClaseHija.init",
+          "name": "ClaseHija(nombre: String, depto: String)",
+          "kind": "constructor",
+          "visibility": "public"
+        },
+        {
+          "id": "ClaseHija.mostrarDetalle",
+          "name": "@Override mostrarDetalle(): void",
+          "kind": "method",
+          "visibility": "public"
+        }
+      ]
+    },
+    {
+      "id": "Main",
+      "label": "Clase Main",
+      "type": "main",
+      "members": [
+        {
+          "id": "Main.mainMethod",
+          "name": "main(args: String[]): void",
+          "kind": "method",
+          "visibility": "public"
+        }
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "source": "ClaseHija",
+      "target": "ClasePadre",
+      "type": "inheritance",
+      "label": "extends ClasePadre"
+    },
+    {
+      "source": "ClaseHija.init",
+      "target": "ClasePadre.init",
+      "type": "inheritance",
+      "label": "invoca super(nombre) para inicializar el estado del padre"
+    },
+    {
+      "source": "ClasePadre.nombre",
+      "target": "ClaseHija.mostrarDetalle",
+      "type": "dataflow",
+      "label": "atributo heredado 'nombre' consumido en la subclase"
+    },
+    {
+      "source": "ClaseHija.mostrarDetalle",
+      "target": "ClasePadre.mostrarDetalle",
+      "type": "inheritance",
+      "label": "sobrescribe polimórficamente (@Override) el comportamiento"
+    },
+    {
+      "source": "Main.mainMethod",
+      "target": "ClaseHija.init",
+      "type": "instantiation",
+      "label": "new ClaseHija(\"Ana\", \"Ingeniería\")"
+    },
+    {
+      "source": "Main.mainMethod",
+      "target": "ClaseHija.mostrarDetalle",
+      "type": "call",
+      "label": "hija.mostrarDetalle()"
+    },
+    {
+      "source": "Main.mainMethod",
+      "target": "ClasePadre.getNombre",
+      "type": "call",
+      "label": "hija.getNombre() (método heredado del padre)"
+    },
+    {
+      "source": "ClasePadre.getNombre",
+      "target": "Main.mainMethod",
+      "type": "return",
+      "label": "retorna \"Ana\" hacia el hilo principal"
+    }
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CodeChordsSpecification",
+  "description": "Esquema de validación para diagramas de conexiones relacionales de código y arquitectura (Code-Chords).",
+  "type": "object",
+  "required": ["title", "nodes", "connections"],
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Título descriptivo del diagrama."
+    },
+    "description": {
+      "type": "string",
+      "description": "Descripción contextual del sistema o flujo modelado."
+    },
+    "defaultView": {
+      "type": "string",
+      "enum": ["blocks", "spectrum", "vertical"],
+      "default": "blocks",
+      "description": "Modo de visualización inicial: 'blocks' (bloques 2D), 'spectrum' (arco bíblico lineal) o 'vertical' (flujo vertical continuo con navegación y arcos laterales)."
+    },
+    "nodes": {
+      "type": "array",
+      "description": "Contenedores de primer nivel (clases, interfaces, capas o módulos).",
+      "items": {
+        "type": "object",
+        "required": ["id", "label"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador único del nodo."
+          },
+          "label": {
+            "type": "string",
+            "description": "Nombre visible del contenedor (ej. 'ClasePadre', 'Main')."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["class", "abstract_class", "interface", "record", "main", "controller", "service", "dao", "database", "module", "custom"],
+            "default": "class",
+            "description": "Categoría arquitectónica o sintáctica del nodo."
+          },
+          "members": {
+            "type": "array",
+            "description": "Elementos internos atómicos pertenecientes al nodo.",
+            "items": {
+              "type": "object",
+              "required": ["id", "name", "kind"],
+              "properties": {
+                "id": {
+                  "type": "string",
+                  "description": "Identificador único del miembro (ej. 'ClaseP.nombre')."
+                },
+                "name": {
+                  "type": "string",
+                  "description": "Firma o nombre visible (ej. 'nombre: String', 'getNombre(): String')."
+                },
+                "kind": {
+                  "type": "string",
+                  "enum": ["attribute", "constructor", "method", "param", "return", "variable", "constant"],
+                  "description": "Naturaleza del miembro."
+                },
+                "visibility": {
+                  "type": "string",
+                  "enum": ["public", "protected", "private", "package"],
+                  "default": "public",
+                  "description": "Modificador de visibilidad."
+                },
+                "snippet": {
+                  "type": "string",
+                  "description": "Fragmento de código fuente correspondiente a este miembro."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "connections": {
+      "type": "array",
+      "description": "Arcos de conexión relacional entre miembros o nodos.",
+      "items": {
+        "type": "object",
+        "required": ["source", "target", "type"],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "source": {
+            "type": "string",
+            "description": "ID del miembro o nodo de origen."
+          },
+          "target": {
+            "type": "string",
+            "description": "ID del miembro o nodo de destino."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["inheritance", "dataflow", "call", "instantiation", "return"],
+            "description": "Tipo semántico de la conexión."
+          },
+          "label": {
+            "type": "string",
+            "description": "Anotación semántica (ej. 'pasa atributo al constructor super()')."
+          },
+          "flowOrder": {
+            "type": "integer",
+            "description": "Secuencia cronológica opcional para el paso del mensaje."
+          },
+          "snippet": {
+            "type": "string",
+            "description": "Sentencia de código fuente donde ocurre la llamada o interacción."
+          }
+        }
+      }
+    }
+  }
+}

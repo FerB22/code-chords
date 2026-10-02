@@ -1,0 +1,3061 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>__DIAGRAM_TITLE__ - Code-Chords</title>
+  <style>
+    :root {
+      --bg: #1e2028;
+      --surface: #262933;
+      --surface-card: #2a2e3a;
+      --surface-border: #3a4050;
+      --surface-hover: #333745;
+      --text-main: #f1f5f9;
+      --text-muted: #9ba3b4;
+      --accent: #38bdf8;
+      --badge-bg: rgba(56, 189, 248, 0.16);
+      --color-inheritance: #a855f7;
+      --color-dataflow: #06b6d4;
+      --color-call: #f59e0b;
+      --color-instantiation: #10b981;
+      --color-return: #f43f5e;
+      --scrollbar-track: rgba(0, 0, 0, 0.25);
+      --scrollbar-thumb: rgba(255, 255, 255, 0.2);
+      --scrollbar-thumb-hover: var(--accent);
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "JetBrains Mono", monospace;
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    [data-theme="light"] {
+      --bg: #f1f5f9;
+      --surface: #ffffff;
+      --surface-card: #ffffff;
+      --surface-border: #cbd5e1;
+      --surface-hover: #f8fafc;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --accent: #0284c7;
+      --badge-bg: rgba(2, 132, 199, 0.12);
+      --color-inheritance: #7c3aed;
+      --color-dataflow: #0891b2;
+      --color-call: #d97706;
+      --color-instantiation: #059669;
+      --color-return: #e11d48;
+      --scrollbar-track: rgba(0, 0, 0, 0.05);
+      --scrollbar-thumb: rgba(0, 0, 0, 0.22);
+      --scrollbar-thumb-hover: var(--accent);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      scrollbar-width: thin;
+      scrollbar-color: var(--scrollbar-thumb) var(--scrollbar-track);
+    }
+
+    /* Barras de desplazamiento estilizadas y personalizadas (Chromium, Edge, Safari, Firefox) */
+    ::-webkit-scrollbar {
+      width: 7px;
+      height: 7px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--scrollbar-track);
+      border-radius: 6px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--scrollbar-thumb);
+      border-radius: 6px;
+      border: 1px solid transparent;
+      background-clip: padding-box;
+      transition: background 0.15s ease;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--scrollbar-thumb-hover);
+    }
+
+    ::-webkit-scrollbar-corner {
+      background: transparent;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-main);
+      font-family: var(--font-sans);
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      user-select: none;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+
+    header {
+      height: 60px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--surface-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      z-index: 25;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+
+    .brand-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, #6366f1, #06b6d4);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 5px 9px;
+      border-radius: 6px;
+      letter-spacing: 0.6px;
+      font-family: var(--font-mono);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    h1 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-group {
+      display: flex;
+      background: var(--bg);
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 2px;
+    }
+
+    .btn-toggle {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      padding: 6px 14px;
+      font-size: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .btn-toggle.active {
+      background: var(--surface);
+      color: var(--text-main);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+    }
+
+    .btn-action {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      color: var(--text-main);
+      padding: 6px 12px;
+      font-size: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      transition: all 0.15s ease;
+    }
+
+    .btn-action svg {
+      flex-shrink: 0;
+    }
+
+    .btn-action:hover {
+      background: var(--surface-hover);
+      border-color: var(--accent);
+    }
+
+    .btn-action.primary {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .btn-action.primary:hover {
+      opacity: 0.9;
+    }
+
+    main {
+      flex: 1;
+      position: relative;
+      display: flex;
+      overflow: hidden;
+    }
+
+    #viewport-container {
+      flex: 1;
+      height: 100%;
+      position: relative;
+      cursor: grab;
+    }
+
+    #viewport-container.panning {
+      cursor: grabbing;
+    }
+
+    svg#chords-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .filter-panel {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 12px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      z-index: 10;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      max-width: 280px;
+    }
+
+    .filter-panel h3 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .filter-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .color-pill {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .drag-hint {
+      font-size: 11px;
+      color: var(--accent);
+      background: var(--badge-bg);
+      padding: 5px 8px;
+      border-radius: 6px;
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    aside#inspector {
+      width: 330px;
+      background: var(--surface);
+      border-left: 1px solid var(--surface-border);
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      gap: 16px;
+      overflow-y: auto;
+      z-index: 15;
+      box-shadow: -4px 0 16px rgba(0,0,0,0.06);
+    }
+
+    .inspector-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--surface-border);
+      padding-bottom: 12px;
+      gap: 10px;
+    }
+
+    .inspector-header h2 {
+      font-size: 13.5px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 6px;
+      white-space: nowrap;
+      line-height: 1.2;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    #selected-type-badge {
+      transition: all 0.2s ease;
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-muted);
+      border: 1px solid var(--surface-border);
+    }
+
+    .trace-section {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .trace-section h4 {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+    }
+
+    .trace-card {
+      background: var(--bg);
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .trace-card .badge {
+      align-self: flex-start;
+      padding: 3px 8px;
+      border-radius: 5px;
+    }
+
+    .trace-direction {
+      font-size: 11px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .trace-label {
+      font-style: italic;
+      color: var(--text-main);
+      font-size: 11px;
+    }
+
+    /* Bloque de código fuente en inspector */
+    .code-viewer-card {
+      background: #14161e;
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-top: 10px;
+      margin-bottom: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .code-viewer-header {
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--surface-border);
+      padding: 6px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .code-copy-btn {
+      background: transparent;
+      border: 1px solid var(--surface-border);
+      color: var(--text-muted);
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.15s ease;
+    }
+
+    .code-copy-btn:hover {
+      color: var(--text-main);
+      border-color: var(--accent);
+      background: rgba(56, 189, 248, 0.1);
+    }
+
+    .code-lines-wrapper {
+      display: flex;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      line-height: 1.6;
+      max-height: 240px;
+      overflow: auto;
+      padding: 8px 0;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.22) #0f1117;
+    }
+
+    .code-lines-wrapper::-webkit-scrollbar {
+      height: 6px;
+      width: 6px;
+    }
+
+    .code-lines-wrapper::-webkit-scrollbar-track {
+      background: #0f1117;
+      border-radius: 4px;
+    }
+
+    .code-lines-wrapper::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+    }
+
+    .code-lines-wrapper::-webkit-scrollbar-thumb:hover {
+      background: var(--accent);
+    }
+
+    .code-line-numbers {
+      padding: 0 8px 0 10px;
+      color: #555d70;
+      text-align: right;
+      user-select: none;
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .code-pre-block {
+      padding: 0 12px;
+      margin: 0;
+      white-space: pre;
+      color: #e2e8f0;
+      tab-size: 4;
+    }
+
+    /* Tokens de resaltado sintáctico Java */
+    .syn-kw { color: #c084fc; font-weight: 600; }
+    .syn-ann { color: #fbbf24; font-weight: 600; }
+    .syn-str { color: #34d399; }
+    .syn-num { color: #fb923c; }
+    .syn-typ { color: #38bdf8; font-weight: 500; }
+    .syn-com { color: #64748b; font-style: italic; }
+
+    @keyframes chordFlowPulse {
+      from {
+        stroke-dashoffset: 28;
+      }
+      to {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    .chord-arc {
+      fill: none;
+      stroke-linecap: round;
+      transition: stroke-opacity 0.2s ease, stroke-width 0.2s ease;
+      cursor: pointer;
+    }
+
+    .chord-arc:hover {
+      stroke-width: 3.8px !important;
+      stroke-opacity: 1 !important;
+      stroke-dasharray: 8 5;
+      animation: chordFlowPulse 1s linear infinite;
+      filter: drop-shadow(0 0 6px currentColor);
+    }
+
+    .chord-arc.dimmed {
+      stroke-opacity: 0.05 !important;
+    }
+
+    .chord-arc.highlighted {
+      stroke-opacity: 1 !important;
+      stroke-width: 3.2px !important;
+      stroke-dasharray: 8 5;
+      animation: chordFlowPulse 1s linear infinite;
+      filter: drop-shadow(0 0 6px currentColor);
+    }
+
+    .chord-arc.isolated-hidden {
+      display: none !important;
+    }
+
+    .node-group.isolated-hidden {
+      opacity: 0.04 !important;
+      pointer-events: none;
+      filter: grayscale(100%);
+      transition: opacity 0.25s ease;
+    }
+
+    .node-group {
+      cursor: grab;
+      transition: opacity 0.2s ease;
+    }
+
+    .node-group.dragging {
+      cursor: grabbing;
+      filter: drop-shadow(0 14px 34px rgba(0,0,0,0.5));
+    }
+
+    .node-group.dimmed {
+      opacity: 0.15;
+    }
+
+    .node-card-bg {
+      transition: stroke 0.2s ease, filter 0.2s ease;
+    }
+
+    .node-group:hover .node-card-bg {
+      stroke: var(--accent);
+      stroke-width: 2px;
+    }
+
+    .node-header-handle {
+      cursor: grab;
+    }
+
+    .node-group.dragging .node-header-handle {
+      cursor: grabbing;
+    }
+
+    .member-row {
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    .member-row:hover rect.member-bg {
+      fill: rgba(56, 189, 248, 0.12);
+    }
+
+    .member-row.highlighted rect.member-bg {
+      fill: rgba(56, 189, 248, 0.22) !important;
+      stroke: var(--accent) !important;
+      stroke-width: 1.2px !important;
+    }
+
+    .port-circle {
+      transition: r 0.2s ease, stroke-width 0.2s ease, filter 0.2s ease;
+    }
+
+    .member-row:hover .port-circle,
+    .member-row.highlighted .port-circle {
+      r: 6px !important;
+      stroke-width: 2.2px !important;
+      filter: drop-shadow(0 0 6px currentColor);
+    }
+
+    /* Índice flotante de salto rápido para flujo vertical */
+    .vertical-dock {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      z-index: 20;
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(8px);
+      padding: 8px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 170px;
+      max-width: 220px;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .dock-header {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding: 2px 4px 6px 4px;
+      border-bottom: 1px solid var(--surface-border);
+    }
+
+    .dock-list {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .dock-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 9px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid transparent;
+      color: var(--text-main);
+      font-size: 11px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dock-item:hover {
+      background: rgba(56, 189, 248, 0.12);
+      border-color: rgba(56, 189, 248, 0.3);
+      color: var(--accent);
+    }
+
+    .dock-item.active {
+      background: rgba(56, 189, 248, 0.18);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .dock-item-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      flex-shrink: 0;
+      transition: background 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .dock-item.active .dock-item-dot {
+      background: var(--accent);
+      box-shadow: 0 0 6px var(--accent);
+    }
+
+    /* Minirradar / Minimapa interactivo de navegación */
+    .minimap-panel {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      z-index: 20;
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 10px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.28);
+      backdrop-filter: blur(8px);
+      padding: 8px;
+      width: 190px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      user-select: none;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .minimap-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      padding-bottom: 4px;
+      border-bottom: 1px solid var(--surface-border);
+    }
+
+    .minimap-title {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .minimap-toggle-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 2px 4px;
+      font-size: 11px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .minimap-toggle-btn:hover {
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .minimap-body {
+      position: relative;
+      width: 100%;
+      height: 110px;
+      background: rgba(0, 0, 0, 0.28);
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: crosshair;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    svg#minimap-svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    #minimap-viewport-indicator {
+      position: absolute;
+      top: 0;
+      left: 0;
+      border: 1.5px solid var(--accent);
+      background: rgba(56, 189, 248, 0.16);
+      border-radius: 3px;
+      pointer-events: none;
+      box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+      transition: border-color 0.1s ease;
+    }
+
+    .minimap-panel.collapsed .minimap-body {
+      display: none;
+    }
+
+    .btn-action.active {
+      background: var(--accent);
+      color: #0b1120;
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    .btn-action.active svg {
+      stroke: #0b1120;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-window {
+      background: var(--surface);
+      border: 1px solid var(--surface-border);
+      border-radius: 14px;
+      width: 860px;
+      max-width: 92vw;
+      height: 620px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+      overflow: hidden;
+    }
+
+    .modal-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--surface-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-tabs {
+      display: flex;
+      gap: 8px;
+    }
+
+    .modal-tab-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 6px 12px;
+      font-size: 13px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .modal-tab-btn.active {
+      background: var(--surface-hover);
+      color: var(--text-main);
+      font-weight: 600;
+    }
+
+    .modal-body {
+      flex: 1;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      overflow-y: auto;
+    }
+
+    .code-editor-area {
+      flex: 1;
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--surface-border);
+      border-radius: 8px;
+      padding: 14px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-main);
+      resize: none;
+      outline: none;
+      white-space: pre;
+    }
+
+    .code-editor-area:focus {
+      border-color: var(--accent);
+    }
+
+    .modal-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--surface-border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body data-theme="dark">
+  <header>
+    <div class="brand-title">
+      <span class="logo-badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>
+        </svg>
+        CODE-CHORDS
+      </span>
+      <h1 id="title-text">__DIAGRAM_TITLE__</h1>
+    </div>
+
+    <div class="controls-bar">
+      <div class="btn-group">
+        <button id="view-blocks-btn" class="btn-toggle active" title="Vista de bloques por clases/módulos">Bloques</button>
+        <button id="view-spectrum-btn" class="btn-toggle" title="Vista continua estilo arcos bíblicos">Espectro bíblico</button>
+        <button id="view-vertical-btn" class="btn-toggle" title="Vista de flujo vertical continuo con navegación y arcos laterales">Flujo vertical</button>
+      </div>
+
+      <button id="web-editor-btn" class="btn-action primary" title="Editar código Java o JSON directamente en el navegador">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+        <span>Editor web</span>
+      </button>
+
+      <button id="focus-mode-btn" class="btn-action" title="Aislar la vecindad del elemento o conexión seleccionada">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <circle cx="12" cy="12" r="5"/>
+          <circle cx="12" cy="12" r="1.5"/>
+        </svg>
+        <span id="focus-mode-text">Modo enfoque</span>
+      </button>
+
+      <button id="reset-zoom-btn" class="btn-action" title="Restablecer posición y zoom">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"/>
+          <circle cx="12" cy="12" r="3"/>
+        </svg>
+        <span>Centrar</span>
+      </button>
+      
+      <button id="theme-btn" class="btn-action" title="Alternar entre modo oscuro y claro">
+        <span id="theme-icon-container" style="display: flex; align-items: center;"></span>
+        <span id="theme-text">Oscuro</span>
+      </button>
+
+      <button id="export-svg-btn" class="btn-action" title="Descargar como SVG vectorial limpio">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+          <polyline points="7 10 12 15 17 10"/>
+          <line x1="12" y1="15" x2="12" y2="3"/>
+        </svg>
+        <span>Exportar SVG</span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <div class="filter-panel">
+      <h3>Conexiones</h3>
+      <label class="filter-item">
+        <input type="checkbox" id="chk-inheritance" checked data-type="inheritance">
+        <span class="color-pill" style="background: var(--color-inheritance);"></span>
+        <span>Herencia y super()</span>
+      </label>
+      <label class="filter-item">
+        <input type="checkbox" id="chk-dataflow" checked data-type="dataflow">
+        <span class="color-pill" style="background: var(--color-dataflow);"></span>
+        <span>Flujo de atributos / datos</span>
+      </label>
+      <label class="filter-item">
+        <input type="checkbox" id="chk-call" checked data-type="call">
+        <span class="color-pill" style="background: var(--color-call);"></span>
+        <span>Llamadas de métodos</span>
+      </label>
+      <label class="filter-item">
+        <input type="checkbox" id="chk-instantiation" checked data-type="instantiation">
+        <span class="color-pill" style="background: var(--color-instantiation);"></span>
+        <span>Instanciación (new)</span>
+      </label>
+      <label class="filter-item">
+        <input type="checkbox" id="chk-return" checked data-type="return">
+        <span class="color-pill" style="background: var(--color-return);"></span>
+        <span>Retornos / Respuestas</span>
+      </label>
+
+      <div class="drag-hint">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="5 9 2 12 5 15"/>
+          <polyline points="9 5 12 2 15 5"/>
+          <polyline points="15 19 12 22 9 19"/>
+          <polyline points="19 9 22 12 19 15"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <line x1="12" y1="2" x2="12" y2="22"/>
+        </svg>
+        <span>Arrastra las tarjetas para reordenar</span>
+      </div>
+    </div>
+
+    <div id="viewport-container">
+      <div id="minimap-container" class="minimap-panel">
+        <div class="minimap-header">
+          <div class="minimap-title">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
+              <line x1="9" y1="3" x2="9" y2="18"/>
+              <line x1="15" y1="6" x2="15" y2="21"/>
+            </svg>
+            <span>Minimapa</span>
+          </div>
+          <button id="minimap-toggle-btn" class="minimap-toggle-btn" title="Plegar o desplegar minimapa">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+        </div>
+        <div id="minimap-body" class="minimap-body">
+          <svg id="minimap-svg"></svg>
+          <div id="minimap-viewport-indicator"></div>
+        </div>
+      </div>
+
+      <div id="vertical-jump-dock" class="vertical-dock" style="display: none;">
+        <div class="dock-header">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="8" y1="6" x2="21" y2="6"/>
+            <line x1="8" y1="12" x2="21" y2="12"/>
+            <line x1="8" y1="18" x2="21" y2="18"/>
+            <line x1="3" y1="6" x2="3.01" y2="6"/>
+            <line x1="3" y1="12" x2="3.01" y2="12"/>
+            <line x1="3" y1="18" x2="3.01" y2="18"/>
+          </svg>
+          <span>Índice secuencial</span>
+        </div>
+        <div id="dock-nodes-list" class="dock-list"></div>
+      </div>
+      <svg id="chords-canvas" viewBox="0 0 1600 900">
+        <defs>
+          <linearGradient id="grad-inheritance" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#a855f7" />
+            <stop offset="100%" stop-color="#c084fc" />
+          </linearGradient>
+          <linearGradient id="grad-dataflow" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#06b6d4" />
+            <stop offset="100%" stop-color="#38bdf8" />
+          </linearGradient>
+          <linearGradient id="grad-call" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#f59e0b" />
+            <stop offset="100%" stop-color="#fbbf24" />
+          </linearGradient>
+          <linearGradient id="grad-instantiation" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#10b981" />
+            <stop offset="100%" stop-color="#34d399" />
+          </linearGradient>
+          <linearGradient id="grad-return" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#f43f5e" />
+            <stop offset="100%" stop-color="#fb7185" />
+          </linearGradient>
+        </defs>
+        <g id="main-transform-group">
+          <g id="connections-layer"></g>
+          <g id="nodes-layer"></g>
+        </g>
+      </svg>
+    </div>
+
+    <aside id="inspector">
+      <div class="inspector-header">
+        <h2>Inspector de traza</h2>
+        <span id="selected-type-badge" class="badge">Ninguno</span>
+      </div>
+      <div id="inspector-content">
+        <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+          Haz clic en cualquier atributo, método o arco de conexión para inspeccionar la traza relacional («¿quién llama a quién y qué le entrega?»).
+        </p>
+      </div>
+    </aside>
+  </main>
+
+  <div id="web-editor-modal" class="modal-overlay">
+    <div class="modal-window">
+      <div class="modal-header">
+        <div class="modal-tabs">
+          <button id="tab-java-btn" class="modal-tab-btn active">Analizador Java</button>
+          <button id="tab-json-btn" class="modal-tab-btn">Editor JSON</button>
+          <button id="tab-gen-btn" class="modal-tab-btn">Generar código Java</button>
+        </div>
+        <button id="modal-close-btn" class="btn-action" style="padding: 4px 8px;">✕</button>
+      </div>
+
+      <div class="modal-body" id="tab-java-panel">
+        <p style="font-size: 12px; color: var(--text-muted);">
+          Pega aquí el código fuente de tus clases Java (puedes pegar múltiples clases seguidas). La aplicación web analizará automáticamente los atributos, métodos, herencia, llamadas e instanciaciones.
+        </p>
+        <textarea id="java-input-area" class="code-editor-area" placeholder="public class MiClase { ... }"></textarea>
+      </div>
+
+      <div class="modal-body" id="tab-json-panel" style="display: none;">
+        <p style="font-size: 12px; color: var(--text-muted);">
+          Edita directamente la especificación JSON estructurada de nodos y conexiones.
+        </p>
+        <textarea id="json-input-area" class="code-editor-area"></textarea>
+      </div>
+
+      <div class="modal-body" id="tab-gen-panel" style="display: none;">
+        <p style="font-size: 12px; color: var(--text-muted);">
+          Código Java generado automáticamente con base en el diagrama actual:
+        </p>
+        <textarea id="gen-output-area" class="code-editor-area" readonly></textarea>
+      </div>
+
+      <div class="modal-footer">
+        <button id="modal-cancel-btn" class="btn-action">Cerrar</button>
+        <button id="modal-apply-btn" class="btn-action primary">Compilar y actualizar diagrama</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let DIAGRAM = __DIAGRAM_DATA__;
+
+    let currentView = DIAGRAM.defaultView || 'blocks';
+    let selectedElementId = null;
+    let visibleTypes = new Set(['inheritance', 'dataflow', 'call', 'instantiation', 'return']);
+
+    // Diccionario de traducción al español para términos de arquitectura y conexiones
+    const I18N = {
+      inheritance: 'Herencia',
+      dataflow: 'Flujo de datos',
+      call: 'Llamada a método',
+      instantiation: 'Instanciación',
+      return: 'Retorno de valor',
+
+      attribute: 'Atributo',
+      method: 'Método',
+      constructor: 'Constructor',
+      variable: 'Variable local',
+      parameter: 'Parámetro',
+
+      class: 'Clase',
+      interface: 'Interfaz',
+      main: 'Principal',
+      module: 'Módulo'
+    };
+
+    const I18N_SHORT = {
+      inheritance: 'Herencia',
+      dataflow: 'Datos',
+      call: 'Llamada',
+      instantiation: 'Instancia',
+      return: 'Retorno',
+
+      attribute: 'Atributo',
+      method: 'Método',
+      constructor: 'Constructor',
+      variable: 'Variable',
+
+      class: 'Clase',
+      interface: 'Interfaz',
+      main: 'Principal',
+      module: 'Módulo'
+    };
+
+    function translateType(key) {
+      if (!key) return '';
+      const k = String(key).toLowerCase().trim();
+      return I18N[k] || key;
+    }
+
+    function translateShort(key) {
+      if (!key) return '';
+      const k = String(key).toLowerCase().trim();
+      return I18N_SHORT[k] || key;
+    }
+
+    const nodePositions = new Map();
+    const memberPositions = new Map();
+    const nodeBounds = new Map();
+
+    const svg = document.getElementById('chords-canvas');
+    const transformGroup = document.getElementById('main-transform-group');
+    const nodesLayer = document.getElementById('nodes-layer');
+    const connectionsLayer = document.getElementById('connections-layer');
+    const viewportContainer = document.getElementById('viewport-container');
+
+    let viewBox = { x: 0, y: 0, width: 1600, height: 900 };
+    let totalVerticalHeight = 1200;
+    let isPanning = false;
+    let startPoint = { x: 0, y: 0 };
+
+    let isDraggingNode = false;
+    let draggedNodeId = null;
+    let dragOffset = { x: 0, y: 0 };
+
+    // Estados de modo enfoque y minimapa interactivo
+    let isFocusMode = false;
+    let minimapBounds = null;
+    let isMinimapCollapsed = false;
+    let isMinimapDragging = false;
+
+    function updateViewBox() {
+      svg.setAttribute('viewBox', `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`);
+      updateMinimapViewport();
+    }
+
+    function getSvgCoordinates(clientX, clientY) {
+      const rect = viewportContainer.getBoundingClientRect();
+      const mouseX = clientX - rect.left;
+      const mouseY = clientY - rect.top;
+      return {
+        x: viewBox.x + (mouseX / viewportContainer.clientWidth) * viewBox.width,
+        y: viewBox.y + (mouseY / viewportContainer.clientHeight) * viewBox.height
+      };
+    }
+
+    viewportContainer.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.node-group') || e.target.closest('.chord-arc') || e.target.closest('#minimap-container')) return;
+      isPanning = true;
+      viewportContainer.classList.add('panning');
+      startPoint = { x: e.clientX, y: e.clientY };
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (isMinimapDragging) {
+        moveViewBoxFromMinimap(e);
+        return;
+      }
+
+      if (isDraggingNode && draggedNodeId && currentView === 'blocks') {
+        const svgCoords = getSvgCoordinates(e.clientX, e.clientY);
+        const pos = nodePositions.get(draggedNodeId);
+        if (pos) {
+          pos.x = svgCoords.x - dragOffset.x;
+          pos.y = svgCoords.y - dragOffset.y;
+
+          const nodeG = document.querySelector(`.node-group[data-node-id="${draggedNodeId}"]`);
+          if (nodeG) {
+            nodeG.setAttribute('transform', `translate(${pos.x}, ${pos.y})`);
+          }
+
+          updateMemberPositionsForNode(draggedNodeId);
+          renderConnections();
+        }
+        return;
+      }
+
+      if (isPanning) {
+        const dx = (e.clientX - startPoint.x) * (viewBox.width / viewportContainer.clientWidth);
+        const dy = (e.clientY - startPoint.y) * (viewBox.height / viewportContainer.clientHeight);
+        viewBox.x -= dx;
+        viewBox.y -= dy;
+        startPoint = { x: e.clientX, y: e.clientY };
+        updateViewBox();
+        if (currentView === 'vertical') updateActiveDockItem();
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isMinimapDragging) {
+        isMinimapDragging = false;
+      }
+
+      if (isDraggingNode) {
+        if (draggedNodeId) {
+          const nodeG = document.querySelector(`.node-group[data-node-id="${draggedNodeId}"]`);
+          if (nodeG) nodeG.classList.remove('dragging');
+        }
+        isDraggingNode = false;
+        draggedNodeId = null;
+        render();
+      }
+
+      if (isPanning) {
+        isPanning = false;
+        viewportContainer.classList.remove('panning');
+      }
+    });
+
+    viewportContainer.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      if (currentView === 'vertical' && !e.ctrlKey) {
+        // En modo vertical, el desplazamiento de la rueda desliza verticalmente de forma continua
+        viewBox.y += e.deltaY * 0.85;
+        const maxY = Math.max(300, totalVerticalHeight - 250);
+        viewBox.y = Math.max(-80, Math.min(viewBox.y, maxY));
+        updateViewBox();
+        updateActiveDockItem();
+        return;
+      }
+
+      const zoomFactor = e.deltaY > 0 ? 1.08 : 0.92;
+      const mouseCoords = getSvgCoordinates(e.clientX, e.clientY);
+
+      viewBox.width *= zoomFactor;
+      viewBox.height *= zoomFactor;
+      viewBox.x = mouseCoords.x - (e.clientX - viewportContainer.getBoundingClientRect().left) / viewportContainer.clientWidth * viewBox.width;
+      viewBox.y = mouseCoords.y - (e.clientY - viewportContainer.getBoundingClientRect().top) / viewportContainer.clientHeight * viewBox.height;
+
+      updateViewBox();
+      if (currentView === 'vertical') updateActiveDockItem();
+    });
+
+    document.getElementById('reset-zoom-btn').addEventListener('click', () => {
+      if (currentView === 'vertical') {
+        viewBox = { x: 0, y: 0, width: 1600, height: 950 };
+      } else {
+        viewBox = { x: 0, y: 0, width: 1600, height: 900 };
+      }
+      updateViewBox();
+      if (currentView === 'vertical') updateActiveDockItem();
+    });
+
+    const themeBtn = document.getElementById('theme-btn');
+    const themeIconContainer = document.getElementById('theme-icon-container');
+    const themeText = document.getElementById('theme-text');
+
+    const svgIconMoon = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+    const svgIconSun = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`;
+
+    function applyTheme(theme) {
+      document.body.setAttribute('data-theme', theme);
+      if (theme === 'dark') {
+        themeIconContainer.innerHTML = svgIconMoon;
+        themeText.textContent = 'Oscuro';
+      } else {
+        themeIconContainer.innerHTML = svgIconSun;
+        themeText.textContent = 'Claro';
+      }
+      localStorage.setItem('code_chords_theme', theme);
+    }
+
+    const savedTheme = localStorage.getItem('code_chords_theme') || 'dark';
+    applyTheme(savedTheme);
+
+    themeBtn.addEventListener('click', () => {
+      const current = document.body.getAttribute('data-theme') || 'dark';
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    });
+
+    const btnBlocks = document.getElementById('view-blocks-btn');
+    const btnSpectrum = document.getElementById('view-spectrum-btn');
+    const btnVertical = document.getElementById('view-vertical-btn');
+
+    function setActiveViewButton(view) {
+      btnBlocks.classList.toggle('active', view === 'blocks');
+      btnSpectrum.classList.toggle('active', view === 'spectrum');
+      if (btnVertical) btnVertical.classList.toggle('active', view === 'vertical');
+    }
+
+    btnBlocks.addEventListener('click', () => {
+      if (currentView === 'blocks') return;
+      currentView = 'blocks';
+      setActiveViewButton('blocks');
+      viewBox = { x: 0, y: 0, width: 1600, height: 900 };
+      updateViewBox();
+      render();
+    });
+
+    btnSpectrum.addEventListener('click', () => {
+      if (currentView === 'spectrum') return;
+      currentView = 'spectrum';
+      setActiveViewButton('spectrum');
+      viewBox = { x: 0, y: 0, width: 1600, height: 900 };
+      updateViewBox();
+      render();
+    });
+
+    if (btnVertical) {
+      btnVertical.addEventListener('click', () => {
+        if (currentView === 'vertical') return;
+        currentView = 'vertical';
+        setActiveViewButton('vertical');
+        viewBox = { x: 0, y: 0, width: 1600, height: 950 };
+        updateViewBox();
+        render();
+      });
+    }
+
+    document.querySelectorAll('.filter-item input').forEach(input => {
+      input.addEventListener('change', (e) => {
+        const type = e.target.getAttribute('data-type');
+        if (e.target.checked) {
+          visibleTypes.add(type);
+        } else {
+          visibleTypes.delete(type);
+        }
+        renderConnections();
+        renderMinimap();
+        applyFocusIsolation();
+      });
+    });
+
+    function render() {
+      memberPositions.clear();
+      nodesLayer.innerHTML = '';
+      connectionsLayer.innerHTML = '';
+
+      const dock = document.getElementById('vertical-jump-dock');
+      if (dock) {
+        if (currentView === 'vertical') {
+          dock.style.display = 'flex';
+          renderVerticalDock();
+        } else {
+          dock.style.display = 'none';
+        }
+      }
+
+      if (currentView === 'blocks') {
+        renderBlocksLayout();
+      } else if (currentView === 'vertical') {
+        renderVerticalLayout();
+      } else {
+        renderSpectrumLayout();
+      }
+
+      renderConnections();
+      renderMinimap();
+      applyFocusIsolation();
+    }
+
+    // DISPOSICIÓN 1: BLOQUES CON CONECTORES DIRECTOS VISIBLES A CADA MIEMBRO
+    function renderBlocksLayout() {
+      const nodes = DIAGRAM.nodes;
+      const count = nodes.length;
+      const cardWidth = 350;
+      const headerHeight = 44;
+      const rowHeight = 32;
+
+      nodes.forEach((node, idx) => {
+        const membersCount = (node.members || []).length;
+        const cardHeight = headerHeight + Math.max(membersCount, 1) * rowHeight + 14;
+        nodeBounds.set(node.id, { width: cardWidth, height: cardHeight });
+
+        if (!nodePositions.has(node.id)) {
+          let x = 120;
+          let y = 100;
+          if (count === 3) {
+            if (idx === 0) { x = 180; y = 90; }
+            else if (idx === 1) { x = 640; y = 250; }
+            else if (idx === 2) { x = 1100; y = 410; }
+          } else {
+            const cols = Math.min(count, 3);
+            const col = idx % cols;
+            const row = Math.floor(idx / cols);
+            x = 120 + col * 460;
+            y = 90 + row * 370;
+          }
+          nodePositions.set(node.id, { x, y });
+        }
+
+        const pos = nodePositions.get(node.id);
+
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'node-group');
+        g.setAttribute('data-node-id', node.id);
+        g.setAttribute('transform', `translate(${pos.x}, ${pos.y})`);
+
+        // Tarjeta
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('class', 'node-card-bg');
+        rect.setAttribute('x', 0);
+        rect.setAttribute('y', 0);
+        rect.setAttribute('width', cardWidth);
+        rect.setAttribute('height', cardHeight);
+        rect.setAttribute('rx', '14');
+        rect.setAttribute('fill', 'var(--surface-card)');
+        rect.setAttribute('stroke', 'var(--surface-border)');
+        rect.setAttribute('stroke-width', '1.5');
+        rect.setAttribute('filter', 'drop-shadow(0 6px 18px rgba(0,0,0,0.2))');
+        g.appendChild(rect);
+
+        // Encabezado
+        const headerRect = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        headerRect.setAttribute('class', 'node-header-handle');
+        headerRect.setAttribute('d', `M 0 14 A 14 14 0 0 1 14 0 L ${cardWidth - 14} 0 A 14 14 0 0 1 ${cardWidth} 14 L ${cardWidth} ${headerHeight} L 0 ${headerHeight} Z`);
+        headerRect.setAttribute('fill', 'rgba(255,255,255,0.04)');
+        g.appendChild(headerRect);
+
+        // Píldora de insignia
+        const badgePill = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        badgePill.setAttribute('x', 14);
+        badgePill.setAttribute('y', 12);
+        badgePill.setAttribute('width', 56);
+        badgePill.setAttribute('height', 20);
+        badgePill.setAttribute('rx', '5');
+        badgePill.setAttribute('fill', 'var(--badge-bg)');
+        badgePill.setAttribute('stroke', 'rgba(56, 189, 248, 0.3)');
+        badgePill.setAttribute('stroke-width', '1');
+        g.appendChild(badgePill);
+
+        const badgeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        badgeText.setAttribute('x', 42);
+        badgeText.setAttribute('y', 26);
+        badgeText.setAttribute('text-anchor', 'middle');
+        badgeText.setAttribute('font-size', '10px');
+        badgeText.setAttribute('font-family', 'var(--font-mono)');
+        badgeText.setAttribute('font-weight', '700');
+        badgeText.setAttribute('fill', 'var(--accent)');
+        badgeText.textContent = translateShort(node.type || 'class').toUpperCase();
+        g.appendChild(badgeText);
+
+        const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        title.setAttribute('x', 80);
+        title.setAttribute('y', 27);
+        title.setAttribute('font-size', '14px');
+        title.setAttribute('font-weight', '600');
+        title.setAttribute('fill', 'var(--text-main)');
+        title.textContent = node.label;
+        g.appendChild(title);
+
+        // Asa de arrastre
+        const gripG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        gripG.setAttribute('transform', `translate(${cardWidth - 24}, 16)`);
+        gripG.setAttribute('fill', 'var(--text-muted)');
+        [ [0,0], [5,0], [0,5], [5,5], [0,10], [5,10] ].forEach(([gx, gy]) => {
+          const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          c.setAttribute('cx', gx);
+          c.setAttribute('cy', gy);
+          c.setAttribute('r', '1.5');
+          gripG.appendChild(c);
+        });
+        g.appendChild(gripG);
+
+        // Miembros con puertos limpios en el borde (el hilo se corta al tocar la tarjeta)
+        (node.members || []).forEach((m, mIdx) => {
+          const myRel = headerHeight + mIdx * rowHeight + 8;
+          const portRelY = myRel + (rowHeight - 4) / 2;
+
+          const rowG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          rowG.setAttribute('class', 'member-row');
+          rowG.setAttribute('data-member-id', m.id);
+
+          // Fondo fila (se ilumina suavemente en hover)
+          const rowBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rowBg.setAttribute('class', 'member-bg');
+          rowBg.setAttribute('x', 6);
+          rowBg.setAttribute('y', myRel);
+          rowBg.setAttribute('width', cardWidth - 12);
+          rowBg.setAttribute('height', rowHeight - 4);
+          rowBg.setAttribute('rx', '6');
+          rowBg.setAttribute('fill', 'transparent');
+          rowG.appendChild(rowBg);
+
+          // Analizar conexiones de este miembro para determinar puertos en el borde
+          const memberOutgoing = DIAGRAM.connections.filter(c => c.source === m.id && visibleTypes.has(c.type));
+          const memberIncoming = DIAGRAM.connections.filter(c => c.target === m.id && visibleTypes.has(c.type));
+
+          let hasLeftConns = false;
+          let hasRightConns = false;
+          let primaryLeftType = null;
+          let primaryRightType = null;
+
+          const thisPos = nodePositions.get(node.id) || { x: 0, y: 0 };
+
+          [...memberOutgoing, ...memberIncoming].forEach(c => {
+            const isOut = c.source === m.id;
+            const otherId = isOut ? c.target : c.source;
+            const otherNodeId = otherId.includes('.') ? otherId.split('.')[0] : otherId;
+            const otherPos = nodePositions.get(otherNodeId);
+            const isOtherLeft = otherPos ? (otherPos.x < thisPos.x) : false;
+
+            if (isOtherLeft) {
+              hasLeftConns = true;
+              if (!primaryLeftType) primaryLeftType = c.type;
+            } else {
+              hasRightConns = true;
+              if (!primaryRightType) primaryRightType = c.type;
+            }
+          });
+
+          // Puerto exterior izquierdo en el borde de la tarjeta (donde se corta el hilo)
+          if (hasLeftConns) {
+            const leftColor = `var(--color-${primaryLeftType || 'dataflow'})`;
+            const pLeft = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            pLeft.setAttribute('class', 'port-circle port-left');
+            pLeft.setAttribute('cx', 0);
+            pLeft.setAttribute('cy', portRelY);
+            pLeft.setAttribute('r', '4.5');
+            pLeft.setAttribute('fill', leftColor);
+            pLeft.setAttribute('stroke', 'var(--surface-card)');
+            pLeft.setAttribute('stroke-width', '1.8');
+            pLeft.setAttribute('filter', `drop-shadow(0 0 3px ${leftColor})`);
+            rowG.appendChild(pLeft);
+          }
+
+          // Íconos vectoriales SVG limpios
+          const iconG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          iconG.setAttribute('transform', `translate(16, ${myRel + 6})`);
+
+          if (m.kind === 'attribute' || m.kind === 'variable') {
+            const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            c.setAttribute('cx', 6);
+            c.setAttribute('cy', 7);
+            c.setAttribute('r', '3.5');
+            c.setAttribute('fill', 'var(--color-dataflow)');
+            iconG.appendChild(c);
+          } else if (m.kind === 'method') {
+            const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            p.setAttribute('d', 'M4 12V6a2 2 0 0 1 2-2h2M3 8h6');
+            p.setAttribute('fill', 'none');
+            p.setAttribute('stroke', 'var(--color-call)');
+            p.setAttribute('stroke-width', '1.8');
+            p.setAttribute('stroke-linecap', 'round');
+            iconG.appendChild(p);
+          } else if (m.kind === 'constructor') {
+            const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            poly.setAttribute('points', '6,1 11,7 6,13 1,7');
+            poly.setAttribute('fill', 'none');
+            poly.setAttribute('stroke', 'var(--color-instantiation)');
+            poly.setAttribute('stroke-width', '1.6');
+            iconG.appendChild(poly);
+          } else {
+            const arr = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            arr.setAttribute('x1', '2');
+            arr.setAttribute('y1', '7');
+            arr.setAttribute('x2', '10');
+            arr.setAttribute('y2', '7');
+            arr.setAttribute('stroke', 'var(--accent)');
+            arr.setAttribute('stroke-width', '1.6');
+            iconG.appendChild(arr);
+          }
+          rowG.appendChild(iconG);
+
+          const mText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          mText.setAttribute('x', 36);
+          mText.setAttribute('y', myRel + 19);
+          mText.setAttribute('font-size', '12px');
+          mText.setAttribute('font-family', 'var(--font-mono)');
+          mText.setAttribute('fill', 'var(--text-main)');
+          mText.textContent = m.name;
+          rowG.appendChild(mText);
+
+          // Puerto exterior derecho en el borde de la tarjeta (donde se corta el hilo)
+          if (hasRightConns) {
+            const rightColor = `var(--color-${primaryRightType || 'call'})`;
+            const pRight = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            pRight.setAttribute('class', 'port-circle port-right');
+            pRight.setAttribute('cx', cardWidth);
+            pRight.setAttribute('cy', portRelY);
+            pRight.setAttribute('r', '4.5');
+            pRight.setAttribute('fill', rightColor);
+            pRight.setAttribute('stroke', 'var(--surface-card)');
+            pRight.setAttribute('stroke-width', '1.8');
+            pRight.setAttribute('filter', `drop-shadow(0 0 3px ${rightColor})`);
+            rowG.appendChild(pRight);
+          }
+
+          memberPositions.set(m.id, {
+            id: m.id,
+            nodeId: node.id,
+            relXLeft: 0,
+            relXRight: cardWidth,
+            relY: portRelY,
+            relXCenter: cardWidth / 2,
+            left: { x: pos.x, y: pos.y + portRelY },
+            right: { x: pos.x + cardWidth, y: pos.y + portRelY },
+            center: { x: pos.x + cardWidth / 2, y: pos.y + portRelY }
+          });
+
+          rowG.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectElement(m.id, 'member', m, node);
+          });
+          rowG.addEventListener('mouseenter', () => highlightTrace(m.id));
+          rowG.addEventListener('mouseleave', () => clearHighlight());
+
+          g.appendChild(rowG);
+        });
+
+        g.addEventListener('mousedown', (e) => {
+          if (e.target.closest('.member-row')) return;
+          e.stopPropagation();
+          isDraggingNode = true;
+          draggedNodeId = node.id;
+          g.classList.add('dragging');
+
+          const svgCoords = getSvgCoordinates(e.clientX, e.clientY);
+          const currentPos = nodePositions.get(node.id);
+          dragOffset.x = svgCoords.x - currentPos.x;
+          dragOffset.y = svgCoords.y - currentPos.y;
+
+          nodesLayer.appendChild(g);
+        });
+
+        g.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectElement(node.id, 'node', node);
+        });
+
+        nodesLayer.appendChild(g);
+      });
+    }
+
+    function updateMemberPositionsForNode(nodeId) {
+      const pos = nodePositions.get(nodeId);
+      if (!pos) return;
+      const node = DIAGRAM.nodes.find(n => n.id === nodeId);
+      if (!node) return;
+
+      (node.members || []).forEach(m => {
+        const mPos = memberPositions.get(m.id);
+        if (mPos) {
+          mPos.left.x = pos.x + mPos.relXLeft;
+          mPos.left.y = pos.y + mPos.relY;
+          mPos.right.x = pos.x + mPos.relXRight;
+          mPos.right.y = pos.y + mPos.relY;
+          mPos.center.x = pos.x + mPos.relXCenter;
+          mPos.center.y = pos.y + mPos.relY;
+        }
+      });
+    }
+
+    // DISPOSICIÓN 2: FLUJO VERTICAL CONTINUO (Columna centralizada y arcos laterales)
+    function renderVerticalLayout() {
+      const nodes = DIAGRAM.nodes;
+      const cardWidth = 420;
+      const centerX = Math.round((1600 - cardWidth) / 2); // 590px: centrado perfecto
+      const headerHeight = 44;
+      const rowHeight = 32;
+
+      let currY = 70;
+
+      nodes.forEach((node) => {
+        const membersCount = (node.members || []).length;
+        const cardHeight = headerHeight + Math.max(membersCount, 1) * rowHeight + 14;
+        nodeBounds.set(node.id, { width: cardWidth, height: cardHeight });
+        nodePositions.set(node.id, { x: centerX, y: currY });
+
+        const pos = { x: centerX, y: currY };
+
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        g.setAttribute('class', 'node-group vertical-node-card');
+        g.setAttribute('data-node-id', node.id);
+        g.setAttribute('transform', `translate(${pos.x}, ${pos.y})`);
+
+        // Tarjeta
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('class', 'node-card-bg');
+        rect.setAttribute('x', 0);
+        rect.setAttribute('y', 0);
+        rect.setAttribute('width', cardWidth);
+        rect.setAttribute('height', cardHeight);
+        rect.setAttribute('rx', '14');
+        rect.setAttribute('fill', 'var(--surface-card)');
+        rect.setAttribute('stroke', 'var(--surface-border)');
+        rect.setAttribute('stroke-width', '1.5');
+        rect.setAttribute('filter', 'drop-shadow(0 8px 24px rgba(0,0,0,0.22))');
+        g.appendChild(rect);
+
+        // Encabezado
+        const headerRect = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        headerRect.setAttribute('d', `M 0 14 A 14 14 0 0 1 14 0 L ${cardWidth - 14} 0 A 14 14 0 0 1 ${cardWidth} 14 L ${cardWidth} ${headerHeight} L 0 ${headerHeight} Z`);
+        headerRect.setAttribute('fill', 'rgba(255,255,255,0.04)');
+        g.appendChild(headerRect);
+
+        // Insignia del tipo
+        const badgePill = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        badgePill.setAttribute('x', 14);
+        badgePill.setAttribute('y', 12);
+        badgePill.setAttribute('width', 58);
+        badgePill.setAttribute('height', 20);
+        badgePill.setAttribute('rx', '5');
+        badgePill.setAttribute('fill', 'var(--badge-bg)');
+        badgePill.setAttribute('stroke', 'rgba(56, 189, 248, 0.3)');
+        badgePill.setAttribute('stroke-width', '1');
+        g.appendChild(badgePill);
+
+        const badgeText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        badgeText.setAttribute('x', 43);
+        badgeText.setAttribute('y', 26);
+        badgeText.setAttribute('text-anchor', 'middle');
+        badgeText.setAttribute('font-size', '10px');
+        badgeText.setAttribute('font-family', 'var(--font-mono)');
+        badgeText.setAttribute('font-weight', '700');
+        badgeText.setAttribute('fill', 'var(--accent)');
+        badgeText.textContent = translateShort(node.type || 'class').toUpperCase();
+        g.appendChild(badgeText);
+
+        const title = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        title.setAttribute('x', 82);
+        title.setAttribute('y', 27);
+        title.setAttribute('font-size', '14px');
+        title.setAttribute('font-weight', '600');
+        title.setAttribute('fill', 'var(--text-main)');
+        title.textContent = node.label;
+        g.appendChild(title);
+
+        // Miembros
+        (node.members || []).forEach((m, mIdx) => {
+          const myRel = headerHeight + mIdx * rowHeight + 8;
+          const portRelY = myRel + (rowHeight - 4) / 2;
+
+          const rowG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          rowG.setAttribute('class', 'member-row');
+          rowG.setAttribute('data-member-id', m.id);
+
+          const rowBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+          rowBg.setAttribute('class', 'member-bg');
+          rowBg.setAttribute('x', 6);
+          rowBg.setAttribute('y', myRel);
+          rowBg.setAttribute('width', cardWidth - 12);
+          rowBg.setAttribute('height', rowHeight - 4);
+          rowBg.setAttribute('rx', '6');
+          rowBg.setAttribute('fill', 'transparent');
+          rowG.appendChild(rowBg);
+
+          // Determinar canales laterales para puertos
+          const mConns = DIAGRAM.connections.filter(c => (c.source === m.id || c.target === m.id) && visibleTypes.has(c.type));
+          let hasLeftConns = false;
+          let hasRightConns = false;
+          let primaryLeftType = null;
+          let primaryRightType = null;
+
+          mConns.forEach(c => {
+            const isLeftChannel = ['inheritance', 'dataflow', 'return'].includes(c.type);
+            if (isLeftChannel) {
+              hasLeftConns = true;
+              if (!primaryLeftType) primaryLeftType = c.type;
+            } else {
+              hasRightConns = true;
+              if (!primaryRightType) primaryRightType = c.type;
+            }
+          });
+
+          // Puerto exterior izquierdo
+          if (hasLeftConns) {
+            const leftColor = `var(--color-${primaryLeftType || 'dataflow'})`;
+            const pLeft = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            pLeft.setAttribute('class', 'port-circle port-left');
+            pLeft.setAttribute('cx', 0);
+            pLeft.setAttribute('cy', portRelY);
+            pLeft.setAttribute('r', '4.5');
+            pLeft.setAttribute('fill', leftColor);
+            pLeft.setAttribute('stroke', 'var(--surface-card)');
+            pLeft.setAttribute('stroke-width', '1.8');
+            pLeft.setAttribute('filter', `drop-shadow(0 0 3px ${leftColor})`);
+            rowG.appendChild(pLeft);
+          }
+
+          // Íconos vectoriales SVG limpios
+          const iconG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+          iconG.setAttribute('transform', `translate(16, ${myRel + 6})`);
+
+          if (m.kind === 'attribute' || m.kind === 'variable') {
+            const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            c.setAttribute('cx', 6);
+            c.setAttribute('cy', 7);
+            c.setAttribute('r', '3.5');
+            c.setAttribute('fill', 'var(--color-dataflow)');
+            iconG.appendChild(c);
+          } else if (m.kind === 'method') {
+            const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            p.setAttribute('d', 'M4 12V6a2 2 0 0 1 2-2h2M3 8h6');
+            p.setAttribute('fill', 'none');
+            p.setAttribute('stroke', 'var(--color-call)');
+            p.setAttribute('stroke-width', '1.8');
+            p.setAttribute('stroke-linecap', 'round');
+            iconG.appendChild(p);
+          } else if (m.kind === 'constructor') {
+            const poly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon');
+            poly.setAttribute('points', '6,1 11,7 6,13 1,7');
+            poly.setAttribute('fill', 'none');
+            poly.setAttribute('stroke', 'var(--color-instantiation)');
+            poly.setAttribute('stroke-width', '1.6');
+            iconG.appendChild(poly);
+          } else {
+            const arr = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            arr.setAttribute('x1', '2');
+            arr.setAttribute('y1', '7');
+            arr.setAttribute('x2', '10');
+            arr.setAttribute('y2', '7');
+            arr.setAttribute('stroke', 'var(--accent)');
+            arr.setAttribute('stroke-width', '1.6');
+            iconG.appendChild(arr);
+          }
+          rowG.appendChild(iconG);
+
+          const mText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          mText.setAttribute('x', 36);
+          mText.setAttribute('y', myRel + 19);
+          mText.setAttribute('font-size', '12px');
+          mText.setAttribute('font-family', 'var(--font-mono)');
+          mText.setAttribute('fill', 'var(--text-main)');
+          mText.textContent = m.name;
+          rowG.appendChild(mText);
+
+          // Puerto exterior derecho
+          if (hasRightConns) {
+            const rightColor = `var(--color-${primaryRightType || 'call'})`;
+            const pRight = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+            pRight.setAttribute('class', 'port-circle port-right');
+            pRight.setAttribute('cx', cardWidth);
+            pRight.setAttribute('cy', portRelY);
+            pRight.setAttribute('r', '4.5');
+            pRight.setAttribute('fill', rightColor);
+            pRight.setAttribute('stroke', 'var(--surface-card)');
+            pRight.setAttribute('stroke-width', '1.8');
+            pRight.setAttribute('filter', `drop-shadow(0 0 3px ${rightColor})`);
+            rowG.appendChild(pRight);
+          }
+
+          memberPositions.set(m.id, {
+            id: m.id,
+            nodeId: node.id,
+            relXLeft: 0,
+            relXRight: cardWidth,
+            relY: portRelY,
+            relXCenter: cardWidth / 2,
+            left: { x: pos.x, y: pos.y + portRelY },
+            right: { x: pos.x + cardWidth, y: pos.y + portRelY },
+            center: { x: pos.x + cardWidth / 2, y: pos.y + portRelY }
+          });
+
+          rowG.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectElement(m.id, 'member', m, node);
+          });
+          rowG.addEventListener('mouseenter', () => highlightTrace(m.id));
+          rowG.addEventListener('mouseleave', () => clearHighlight());
+
+          g.appendChild(rowG);
+        });
+
+        g.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectElement(node.id, 'node', node);
+        });
+
+        nodesLayer.appendChild(g);
+
+        currY += cardHeight + 110;
+      });
+
+      totalVerticalHeight = currY + 60;
+    }
+
+    // ÍNDICE FLOTANTE DE SALTO RÁPIDO PARA FLUJO VERTICAL
+    function renderVerticalDock() {
+      const list = document.getElementById('dock-nodes-list');
+      if (!list) return;
+      list.innerHTML = '';
+
+      DIAGRAM.nodes.forEach(node => {
+        const item = document.createElement('button');
+        item.className = 'dock-item';
+        item.setAttribute('data-node-id', node.id);
+        item.title = `Saltar a ${node.label}`;
+        item.innerHTML = `
+          <span class="dock-item-dot"></span>
+          <span>${node.label}</span>
+        `;
+
+        item.addEventListener('click', () => {
+          const pos = nodePositions.get(node.id);
+          if (pos) {
+            viewBox.x = 0;
+            viewBox.y = Math.max(-60, pos.y - 70);
+            updateViewBox();
+            updateActiveDockItem();
+          }
+        });
+
+        list.appendChild(item);
+      });
+
+      updateActiveDockItem();
+    }
+
+    function updateActiveDockItem() {
+      if (currentView !== 'vertical') return;
+      const currentCenterY = viewBox.y + viewBox.height / 3;
+      let closestNodeId = null;
+      let minDiff = Infinity;
+
+      DIAGRAM.nodes.forEach(node => {
+        const pos = nodePositions.get(node.id);
+        if (pos) {
+          const diff = Math.abs(pos.y - currentCenterY);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestNodeId = node.id;
+          }
+        }
+      });
+
+      document.querySelectorAll('.dock-item').forEach(item => {
+        item.classList.toggle('active', item.getAttribute('data-node-id') === closestNodeId);
+      });
+    }
+
+    // DISPOSICIÓN 3: ESPECTRO BÍBLICO (Arcos exactos y cerrados)
+    function renderSpectrumLayout() {
+      const nodes = DIAGRAM.nodes;
+      const axisY = 620;
+      const totalWidth = 1400;
+      const startX = 100;
+
+      let totalMembers = 0;
+      nodes.forEach(n => totalMembers += Math.max((n.members || []).length, 1));
+
+      const memberWidth = (totalWidth - (nodes.length - 1) * 30) / totalMembers;
+      let currentX = startX;
+
+      nodes.forEach((node) => {
+        const members = node.members || [];
+        const nodeWidth = Math.max(members.length, 1) * memberWidth;
+
+        nodePositions.set(node.id, { x: currentX, y: axisY - 8 });
+        nodeBounds.set(node.id, { width: nodeWidth, height: 24 });
+
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', currentX);
+        rect.setAttribute('y', axisY - 8);
+        rect.setAttribute('width', nodeWidth);
+        rect.setAttribute('height', 16);
+        rect.setAttribute('rx', '4');
+        rect.setAttribute('fill', 'var(--surface-card)');
+        rect.setAttribute('stroke', 'var(--accent)');
+        rect.setAttribute('stroke-width', '1.5');
+        nodesLayer.appendChild(rect);
+
+        const label = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        label.setAttribute('x', currentX + nodeWidth / 2);
+        label.setAttribute('y', axisY + 32);
+        label.setAttribute('text-anchor', 'middle');
+        label.setAttribute('font-size', '13px');
+        label.setAttribute('font-weight', '600');
+        label.setAttribute('fill', 'var(--text-main)');
+        label.textContent = node.label;
+        nodesLayer.appendChild(label);
+
+        memberPositions.set(node.id, {
+          id: node.id,
+          nodeId: node.id,
+          left: { x: currentX + nodeWidth / 2, y: axisY - 8 },
+          right: { x: currentX + nodeWidth / 2, y: axisY - 8 },
+          center: { x: currentX + nodeWidth / 2, y: axisY - 8 }
+        });
+
+        members.forEach((m, mIdx) => {
+          const mx = currentX + mIdx * memberWidth + memberWidth / 2;
+          
+          memberPositions.set(m.id, {
+            id: m.id,
+            nodeId: node.id,
+            left: { x: mx, y: axisY - 8 },
+            right: { x: mx, y: axisY - 8 },
+            center: { x: mx, y: axisY - 8 }
+          });
+
+          const pin = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+          pin.setAttribute('cx', mx);
+          pin.setAttribute('cy', axisY);
+          pin.setAttribute('r', '4');
+          pin.setAttribute('fill', m.kind === 'attribute' || m.kind === 'variable' ? 'var(--color-dataflow)' : 'var(--color-call)');
+          pin.setAttribute('cursor', 'pointer');
+
+          const mLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          mLabel.setAttribute('x', mx);
+          mLabel.setAttribute('y', axisY + 50);
+          mLabel.setAttribute('transform', `rotate(45, ${mx}, ${axisY + 50})`);
+          mLabel.setAttribute('font-size', '10px');
+          mLabel.setAttribute('font-family', 'var(--font-mono)');
+          mLabel.setAttribute('fill', 'var(--text-muted)');
+          mLabel.textContent = m.name.split(':')[0];
+          nodesLayer.appendChild(mLabel);
+
+          pin.addEventListener('click', (e) => {
+            e.stopPropagation();
+            selectElement(m.id, 'member', m, node);
+          });
+          pin.addEventListener('mouseenter', () => highlightTrace(m.id));
+          pin.addEventListener('mouseleave', () => clearHighlight());
+
+          nodesLayer.appendChild(pin);
+        });
+
+        currentX += nodeWidth + 30;
+      });
+    }
+
+    function resolveTargetPosition(targetId) {
+      if (memberPositions.has(targetId)) {
+        return memberPositions.get(targetId);
+      }
+      const targetNode = DIAGRAM.nodes.find(n => n.id === targetId);
+      if (targetNode && targetNode.members && targetNode.members.length > 0) {
+        const firstMemberId = targetNode.members[0].id;
+        if (memberPositions.has(firstMemberId)) {
+          return memberPositions.get(firstMemberId);
+        }
+      }
+      return null;
+    }
+
+    // RENDERIZADO DE CONEXIONES CON ABANICO VERTICAL Y RESALTADO DE FILAS
+    function renderConnections() {
+      connectionsLayer.innerHTML = '';
+
+      // Agrupar conexiones por puerto para abanicar si hay múltiples en el mismo miembro
+      const memberArrivalCounts = new Map();
+      const memberOutgoingCounts = new Map();
+
+      DIAGRAM.connections.forEach((conn) => {
+        if (!visibleTypes.has(conn.type)) return;
+        memberOutgoingCounts.set(conn.source, (memberOutgoingCounts.get(conn.source) || 0) + 1);
+        memberArrivalCounts.set(conn.target, (memberArrivalCounts.get(conn.target) || 0) + 1);
+      });
+
+      const memberArrivalIndex = new Map();
+      const memberOutgoingIndex = new Map();
+
+      DIAGRAM.connections.forEach((conn, idx) => {
+        if (!visibleTypes.has(conn.type)) return;
+
+        let sourcePos = resolveTargetPosition(conn.source);
+        let targetPos = resolveTargetPosition(conn.target);
+
+        if (!sourcePos || !targetPos) return;
+
+        let pathD = '';
+        let colorGrad = `url(#grad-${conn.type})`;
+
+        if (currentView === 'blocks') {
+          const isSourceLeft = sourcePos.center.x < targetPos.center.x;
+          let p1 = isSourceLeft ? { ...sourcePos.right } : { ...sourcePos.left };
+          let p2 = isSourceLeft ? { ...targetPos.left } : { ...targetPos.right };
+
+          // Calcular abanico si hay múltiples conexiones
+          const outTotal = memberOutgoingCounts.get(conn.source) || 1;
+          const outIdx = memberOutgoingIndex.get(conn.source) || 0;
+          memberOutgoingIndex.set(conn.source, outIdx + 1);
+
+          const arrTotal = memberArrivalCounts.get(conn.target) || 1;
+          const arrIdx = memberArrivalIndex.get(conn.target) || 0;
+          memberArrivalIndex.set(conn.target, arrIdx + 1);
+
+          if (outTotal > 1) {
+            p1.y += (outIdx - (outTotal - 1) / 2) * 4;
+          }
+          if (arrTotal > 1) {
+            p2.y += (arrIdx - (arrTotal - 1) / 2) * 4;
+          }
+
+          const dx = Math.abs(p2.x - p1.x);
+          const curvature = Math.max(dx * 0.48, 70);
+          const verticalDeviation = ((idx * 17) % 30) - 15;
+
+          const cx1 = isSourceLeft ? p1.x + curvature : p1.x - curvature;
+          const cy1 = p1.y + verticalDeviation;
+          const cx2 = isSourceLeft ? p2.x - curvature : p2.x + curvature;
+          const cy2 = p2.y + verticalDeviation;
+
+          pathD = `M ${p1.x} ${p1.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${p2.x} ${p2.y}`;
+        } else if (currentView === 'vertical') {
+          // Canal izquierdo: herencia, datos y retornos; Canal derecho: llamadas e instanciaciones
+          const isLeftChannel = ['inheritance', 'dataflow', 'return'].includes(conn.type);
+          let p1 = isLeftChannel ? { ...sourcePos.left } : { ...sourcePos.right };
+          let p2 = isLeftChannel ? { ...targetPos.left } : { ...targetPos.right };
+
+          const outTotal = memberOutgoingCounts.get(conn.source) || 1;
+          const outIdx = memberOutgoingIndex.get(conn.source) || 0;
+          memberOutgoingIndex.set(conn.source, outIdx + 1);
+
+          const arrTotal = memberArrivalCounts.get(conn.target) || 1;
+          const arrIdx = memberArrivalIndex.get(conn.target) || 0;
+          memberArrivalIndex.set(conn.target, arrIdx + 1);
+
+          if (outTotal > 1) {
+            p1.y += (outIdx - (outTotal - 1) / 2) * 4;
+          }
+          if (arrTotal > 1) {
+            p2.y += (arrIdx - (arrTotal - 1) / 2) * 4;
+          }
+
+          const dy = Math.abs(p2.y - p1.y);
+          // Ruteo armónico y agrupamiento de carriles laterales según distancia
+          const baseLane = 75 + Math.min(dy * 0.25, 290);
+          const laneSpread = ((idx * 21) % 45);
+          const laneOffset = baseLane + laneSpread;
+
+          if (dy < 6) {
+            const loopX = isLeftChannel ? p1.x - 52 : p1.x + 52;
+            pathD = `M ${p1.x} ${p1.y} C ${loopX} ${p1.y - 32}, ${loopX} ${p1.y + 32}, ${p2.x} ${p2.y}`;
+          } else {
+            const cx1 = isLeftChannel ? p1.x - laneOffset : p1.x + laneOffset;
+            const cy1 = p1.y;
+            const cx2 = isLeftChannel ? p2.x - laneOffset : p2.x + laneOffset;
+            const cy2 = p2.y;
+            pathD = `M ${p1.x} ${p1.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${p2.x} ${p2.y}`;
+          }
+        } else {
+          const axisY = 620 - 8;
+          const x1 = sourcePos.center.x;
+          const x2 = targetPos.center.x;
+          const dist = Math.abs(x2 - x1);
+
+          if (dist < 4) {
+            pathD = `M ${x1} ${axisY} C ${x1 - 25} ${axisY - 45}, ${x1 + 25} ${axisY - 45}, ${x1} ${axisY}`;
+          } else {
+            const height = Math.min(Math.max(dist * 0.6, 40), 460);
+            pathD = `M ${x1} ${axisY} C ${x1} ${axisY - height * 1.3}, ${x2} ${axisY - height * 1.3}, ${x2} ${axisY}`;
+          }
+        }
+
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        path.setAttribute('class', 'chord-arc');
+        path.setAttribute('id', `arc-${idx}`);
+        path.setAttribute('d', pathD);
+        path.setAttribute('stroke', colorGrad);
+        path.setAttribute('stroke-width', '2.2');
+        path.setAttribute('stroke-opacity', '0.7');
+        path.setAttribute('data-source', conn.source);
+        path.setAttribute('data-target', conn.target);
+        path.setAttribute('data-type', conn.type);
+
+        path.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectConnection(conn, idx);
+        });
+
+        path.addEventListener('mouseenter', () => highlightConnection(idx, conn));
+        path.addEventListener('mouseleave', () => {
+          if (!selectedElementId) clearHighlight();
+        });
+
+        connectionsLayer.appendChild(path);
+      });
+    }
+
+    function highlightTrace(id) {
+      if (selectedElementId) return;
+      document.querySelectorAll('.chord-arc').forEach(arc => {
+        const s = arc.getAttribute('data-source');
+        const t = arc.getAttribute('data-target');
+        if (s === id || t === id) {
+          arc.classList.add('highlighted');
+          arc.classList.remove('dimmed');
+        } else {
+          arc.classList.add('dimmed');
+          arc.classList.remove('highlighted');
+        }
+      });
+    }
+
+    function highlightConnection(idx, conn) {
+      if (selectedElementId) return;
+
+      document.querySelectorAll('.chord-arc').forEach((arc, i) => {
+        if (i === idx) {
+          arc.classList.add('highlighted');
+          arc.classList.remove('dimmed');
+        } else {
+          arc.classList.add('dimmed');
+        }
+      });
+
+      // Iluminar visualmente las dos filas de miembros en las tarjetas
+      document.querySelectorAll('.member-row').forEach(row => {
+        const mId = row.getAttribute('data-member-id');
+        if (mId === conn.source || mId === conn.target) {
+          row.classList.add('highlighted');
+        } else {
+          row.classList.remove('highlighted');
+        }
+      });
+    }
+
+    function clearHighlight() {
+      if (selectedElementId) return;
+      document.querySelectorAll('.chord-arc').forEach(arc => {
+        arc.classList.remove('highlighted', 'dimmed');
+      });
+      document.querySelectorAll('.member-row').forEach(row => {
+        row.classList.remove('highlighted');
+      });
+    }
+
+    function selectElement(id, kind, data, parentNode) {
+      selectedElementId = id;
+
+      document.querySelectorAll('.member-row').forEach(row => {
+        if (row.getAttribute('data-member-id') === id) {
+          row.classList.add('highlighted');
+        } else {
+          row.classList.remove('highlighted');
+        }
+      });
+
+      const incoming = DIAGRAM.connections.filter(c => c.target === id);
+      const outgoing = DIAGRAM.connections.filter(c => c.source === id);
+
+      document.querySelectorAll('.chord-arc').forEach(arc => {
+        const s = arc.getAttribute('data-source');
+        const t = arc.getAttribute('data-target');
+        if (s === id || t === id) {
+          arc.classList.add('highlighted');
+          arc.classList.remove('dimmed');
+        } else {
+          arc.classList.add('dimmed');
+          arc.classList.remove('highlighted');
+        }
+      });
+
+      const inspector = document.getElementById('inspector-content');
+      const badge = document.getElementById('selected-type-badge');
+      badge.textContent = kind === 'member' ? translateType(data.kind || 'miembro').toUpperCase() : translateType(data.type || 'clase').toUpperCase();
+      badge.style.background = 'var(--accent)';
+      badge.style.color = '#0b1120';
+      badge.style.borderColor = 'rgba(56, 189, 248, 0.5)';
+
+      let html = `
+        <div style="margin-bottom: 12px;">
+          <h3 style="font-size: 15px; font-weight: 600; color: var(--text-main);">${data.name || data.label}</h3>
+          <p style="font-size: 11px; font-family: var(--font-mono); color: var(--text-muted);">${parentNode ? parentNode.label + ' :: ' : ''}${id}</p>
+        </div>
+      `;
+
+      // Fragmento de código fuente del elemento
+      if (data.snippet) {
+        html += renderCodeBlock('Código fuente', data.snippet);
+      } else if (data.rawCode) {
+        html += renderCodeBlock('Código fuente del nodo', data.rawCode);
+      }
+
+      if (outgoing.length > 0) {
+        html += `<div class="trace-section" style="margin-top: 14px;"><h4>Conexiones de salida (${outgoing.length})</h4>`;
+        outgoing.forEach(c => {
+          html += `
+            <div class="trace-card">
+              <span class="badge" style="background: var(--color-${c.type}); color: #fff;">${translateType(c.type)}</span>
+              <div class="trace-direction">Entrega hacia ➔ <b>${c.target}</b></div>
+              ${c.label ? `<div class="trace-label">«${c.label}»</div>` : ''}
+              ${c.snippet ? renderCodeBlock('Sentencia', c.snippet) : ''}
+            </div>
+          `;
+        });
+        html += `</div>`;
+      }
+
+      if (incoming.length > 0) {
+        html += `<div class="trace-section" style="margin-top: 14px;"><h4>Conexiones de entrada (${incoming.length})</h4>`;
+        incoming.forEach(c => {
+          html += `
+            <div class="trace-card">
+              <span class="badge" style="background: var(--color-${c.type}); color: #fff;">${translateType(c.type)}</span>
+              <div class="trace-direction">Recibe desde ⬅ <b>${c.source}</b></div>
+              ${c.label ? `<div class="trace-label">«${c.label}»</div>` : ''}
+              ${c.snippet ? renderCodeBlock('Sentencia', c.snippet) : ''}
+            </div>
+          `;
+        });
+        html += `</div>`;
+      }
+
+      if (outgoing.length === 0 && incoming.length === 0 && !data.snippet) {
+        html += `<p style="font-size: 12px; color: var(--text-muted);">Este elemento no registra conexiones directas en la especificación.</p>`;
+      }
+
+      inspector.innerHTML = html;
+      if (isFocusMode) {
+        applyFocusIsolation();
+      }
+    }
+
+    function selectConnection(conn, idx) {
+      selectedElementId = `conn-${idx}`;
+      const badge = document.getElementById('selected-type-badge');
+      badge.textContent = translateType(conn.type).toUpperCase();
+      badge.style.background = `var(--color-${conn.type})`;
+      badge.style.color = '#fff';
+      badge.style.borderColor = 'rgba(255, 255, 255, 0.25)';
+
+      document.querySelectorAll('.chord-arc').forEach((arc, i) => {
+        if (i === idx) {
+          arc.classList.add('highlighted');
+          arc.classList.remove('dimmed');
+        } else {
+          arc.classList.add('dimmed');
+          arc.classList.remove('highlighted');
+        }
+      });
+
+      // Iluminar filas
+      document.querySelectorAll('.member-row').forEach(row => {
+        const mId = row.getAttribute('data-member-id');
+        if (mId === conn.source || mId === conn.target) {
+          row.classList.add('highlighted');
+        } else {
+          row.classList.remove('highlighted');
+        }
+      });
+
+      // Buscar fragmento del elemento destino si existe
+      let targetSnippet = null;
+      let targetName = conn.target;
+      DIAGRAM.nodes.forEach(n => {
+        const found = (n.members || []).find(m => m.id === conn.target);
+        if (found) {
+          targetSnippet = found.snippet;
+          targetName = found.name;
+        }
+      });
+
+      const inspector = document.getElementById('inspector-content');
+      let html = `
+        <div class="trace-section">
+          <h4>Vínculo relacional</h4>
+          <div class="trace-card">
+            <div style="font-size: 12px;"><b>Origen:</b> ${conn.source}</div>
+            <div style="font-size: 12px; margin-top: 4px;"><b>Destino:</b> ${conn.target}</div>
+            <div style="margin-top: 8px;"><b>Tipo:</b> <span class="badge" style="background: var(--color-${conn.type}); color: #fff;">${translateType(conn.type)}</span></div>
+            ${conn.label ? `<div class="trace-label" style="margin-top: 8px; font-size: 12px;">«${conn.label}»</div>` : ''}
+          </div>
+        </div>
+      `;
+
+      if (conn.snippet) {
+        html += renderCodeBlock('Interacción / Sentencia ejecutada', conn.snippet);
+      }
+
+      if (targetSnippet) {
+        html += renderCodeBlock(`Implementación receptora (${targetName})`, targetSnippet);
+      }
+
+      inspector.innerHTML = html;
+      if (isFocusMode) {
+        applyFocusIsolation();
+      }
+    }
+
+    // Funciones de formateo y resaltado de código sintáctico
+    function highlightJavaCode(raw) {
+      if (!raw) return '';
+      let out = raw
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      out = out.replace(/(".*?"|'.*?')/g, '<span class="syn-str">$1</span>');
+      out = out.replace(/(@[A-Za-z0-9_]+)/g, '<span class="syn-ann">$1</span>');
+
+      const keywords = [
+        'public', 'protected', 'private', 'static', 'final', 'abstract', 'synchronized',
+        'class', 'interface', 'record', 'extends', 'implements', 'return', 'new', 'this',
+        'super', 'void', 'int', 'boolean', 'double', 'float', 'char', 'byte', 'short', 'long',
+        'if', 'else', 'while', 'for', 'switch', 'case', 'break', 'default', 'try', 'catch',
+        'finally', 'throw', 'throws', 'package', 'import', 'var'
+      ];
+      const kwRegex = new RegExp(`\\b(${keywords.join('|')})\\b`, 'g');
+      out = out.replace(kwRegex, '<span class="syn-kw">$1</span>');
+
+      const commonTypes = ['String', 'Integer', 'Boolean', 'Double', 'List', 'Map', 'Set', 'Object', 'GuitarraElectrica', 'Instrumento', 'EstudioMain'];
+      const typeRegex = new RegExp(`\\b(${commonTypes.join('|')})\\b`, 'g');
+      out = out.replace(typeRegex, '<span class="syn-typ">$1</span>');
+
+      out = out.replace(/\b(\d+)\b/g, '<span class="syn-num">$1</span>');
+
+      return out;
+    }
+
+    function renderCodeBlock(title, code) {
+      if (!code) return '';
+      const lines = code.trim().split('\n');
+      const lineNumbersHtml = lines.map((_, i) => `<div>${i + 1}</div>`).join('');
+      const highlightedCode = highlightJavaCode(code.trim());
+      const encodedRaw = encodeURIComponent(code.trim());
+
+      return `
+        <div class="code-viewer-card">
+          <div class="code-viewer-header">
+            <span>${title}</span>
+            <button class="code-copy-btn" onclick="copySnippet('${encodedRaw}', this)">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+              </svg>
+              <span>Copiar</span>
+            </button>
+          </div>
+          <div class="code-lines-wrapper">
+            <div class="code-line-numbers">${lineNumbersHtml}</div>
+            <pre class="code-pre-block"><code>${highlightedCode}</code></pre>
+          </div>
+        </div>
+      `;
+    }
+
+    window.copySnippet = function(encoded, btn) {
+      const text = decodeURIComponent(encoded);
+      navigator.clipboard.writeText(text).then(() => {
+        const span = btn.querySelector('span');
+        if (span) {
+          const orig = span.textContent;
+          span.textContent = '¡Copiado!';
+          setTimeout(() => span.textContent = orig, 1500);
+        }
+      });
+    };
+
+    viewportContainer.addEventListener('click', () => {
+      selectedElementId = null;
+      clearHighlight();
+      if (isFocusMode) {
+        applyFocusIsolation();
+      }
+      document.querySelectorAll('.member-row').forEach(r => r.classList.remove('highlighted'));
+      const badge = document.getElementById('selected-type-badge');
+      badge.textContent = 'Ninguno';
+      badge.style.background = 'rgba(255, 255, 255, 0.05)';
+      badge.style.color = 'var(--text-muted)';
+      badge.style.borderColor = 'var(--surface-border)';
+      document.getElementById('inspector-content').innerHTML = `
+        <p style="font-size: 12px; color: var(--text-muted); line-height: 1.5;">
+          Haz clic en cualquier atributo, método o arco de conexión para inspeccionar la traza relacional («¿quién llama a quién y qué le entrega?»).
+        </p>
+      `;
+    });
+
+    document.getElementById('export-svg-btn').addEventListener('click', () => {
+      const svgClone = svg.cloneNode(true);
+      const svgData = new XMLSerializer().serializeToString(svgClone);
+      const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${(DIAGRAM.title || 'diagrama').toLowerCase().replace(/\\s+/g, '_')}.svg`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    // ------------------------------------------------------------------
+    // MODO ENFOQUE (AISLAMIENTO DE VECINDAD CONTEXTUAL)
+    // ------------------------------------------------------------------
+    function applyFocusIsolation() {
+      const nodeGroups = document.querySelectorAll('.node-group');
+      const chordArcs = document.querySelectorAll('.chord-arc');
+
+      if (!isFocusMode || !selectedElementId) {
+        nodeGroups.forEach(g => g.classList.remove('isolated-hidden'));
+        chordArcs.forEach(a => a.classList.remove('isolated-hidden'));
+        return;
+      }
+
+      const connectedNodeIds = new Set();
+      const visibleArcIndices = new Set();
+
+      if (selectedElementId.startsWith('conn-')) {
+        const connIdx = parseInt(selectedElementId.replace('conn-', ''), 10);
+        visibleArcIndices.add(connIdx);
+        const conn = DIAGRAM.connections[connIdx];
+        if (conn) {
+          const sNode = conn.source.includes('.') ? conn.source.split('.')[0] : conn.source;
+          const tNode = conn.target.includes('.') ? conn.target.split('.')[0] : conn.target;
+          connectedNodeIds.add(sNode);
+          connectedNodeIds.add(tNode);
+        }
+      } else {
+        const sId = selectedElementId;
+        const parentNodeId = sId.includes('.') ? sId.split('.')[0] : sId;
+        connectedNodeIds.add(parentNodeId);
+
+        DIAGRAM.connections.forEach((c, idx) => {
+          if (!visibleTypes.has(c.type)) return;
+          if (c.source === sId || c.target === sId || c.source.startsWith(sId + '.') || c.target.startsWith(sId + '.')) {
+            visibleArcIndices.add(idx);
+            const other = c.source === sId ? c.target : c.source;
+            const otherNode = other.includes('.') ? other.split('.')[0] : other;
+            connectedNodeIds.add(otherNode);
+          }
+        });
+      }
+
+      nodeGroups.forEach(g => {
+        const nId = g.getAttribute('data-node-id');
+        if (connectedNodeIds.has(nId)) {
+          g.classList.remove('isolated-hidden');
+        } else {
+          g.classList.add('isolated-hidden');
+        }
+      });
+
+      chordArcs.forEach((arc, i) => {
+        if (visibleArcIndices.has(i)) {
+          arc.classList.remove('isolated-hidden');
+        } else {
+          arc.classList.add('isolated-hidden');
+        }
+      });
+    }
+
+    const focusModeBtn = document.getElementById('focus-mode-btn');
+    if (focusModeBtn) {
+      focusModeBtn.addEventListener('click', () => {
+        isFocusMode = !isFocusMode;
+        focusModeBtn.classList.toggle('active', isFocusMode);
+        applyFocusIsolation();
+      });
+    }
+
+    // ------------------------------------------------------------------
+    // MINIRRADAR / MINIMAPA INTERACTIVO DE NAVEGACIÓN
+    // ------------------------------------------------------------------
+    function renderMinimap() {
+      const minimapSvg = document.getElementById('minimap-svg');
+      if (!minimapSvg) return;
+      minimapSvg.innerHTML = '';
+
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+      if (nodePositions.size === 0) {
+        minX = 0; minY = 0; maxX = 1600; maxY = 900;
+      } else {
+        nodePositions.forEach((pos, nodeId) => {
+          const bounds = nodeBounds.get(nodeId) || { width: 350, height: 220 };
+          minX = Math.min(minX, pos.x);
+          minY = Math.min(minY, pos.y);
+          maxX = Math.max(maxX, pos.x + bounds.width);
+          maxY = Math.max(maxY, pos.y + bounds.height);
+        });
+      }
+
+      if (currentView === 'vertical') {
+        maxY = Math.max(maxY, totalVerticalHeight);
+      }
+
+      const pad = 60;
+      minX -= pad;
+      minY -= pad;
+      maxX += pad;
+      maxY += pad;
+
+      const totalW = Math.max(maxX - minX, 500);
+      const totalH = Math.max(maxY - minY, 350);
+
+      minimapSvg.setAttribute('viewBox', `${minX} ${minY} ${totalW} ${totalH}`);
+      minimapBounds = { minX, minY, totalW, totalH };
+
+      // Conexiones en el minimapa (trazos sutiles)
+      DIAGRAM.connections.forEach(conn => {
+        if (!visibleTypes.has(conn.type)) return;
+        const sPos = resolveTargetPosition(conn.source);
+        const tPos = resolveTargetPosition(conn.target);
+        if (!sPos || !tPos) return;
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', sPos.center.x);
+        line.setAttribute('y1', sPos.center.y);
+        line.setAttribute('x2', tPos.center.x);
+        line.setAttribute('y2', tPos.center.y);
+        line.setAttribute('stroke', `var(--color-${conn.type})`);
+        line.setAttribute('stroke-width', '2.5');
+        line.setAttribute('stroke-opacity', '0.45');
+        minimapSvg.appendChild(line);
+      });
+
+      // Mini-tarjetas de nodos
+      nodePositions.forEach((pos, nodeId) => {
+        const bounds = nodeBounds.get(nodeId) || { width: 350, height: 220 };
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('x', pos.x);
+        rect.setAttribute('y', pos.y);
+        rect.setAttribute('width', bounds.width);
+        rect.setAttribute('height', bounds.height);
+        rect.setAttribute('rx', '8');
+        rect.setAttribute('fill', 'rgba(56, 189, 248, 0.2)');
+        rect.setAttribute('stroke', 'rgba(56, 189, 248, 0.6)');
+        rect.setAttribute('stroke-width', '3');
+        minimapSvg.appendChild(rect);
+      });
+
+      updateMinimapViewport();
+    }
+
+    function updateMinimapViewport() {
+      const indicator = document.getElementById('minimap-viewport-indicator');
+      const minimapBody = document.getElementById('minimap-body');
+      if (!indicator || !minimapBody || !minimapBounds) return;
+
+      const bW = minimapBody.clientWidth || 172;
+      const bH = minimapBody.clientHeight || 110;
+
+      const scaleX = bW / minimapBounds.totalW;
+      const scaleY = bH / minimapBounds.totalH;
+
+      const left = Math.max(0, Math.min(bW, (viewBox.x - minimapBounds.minX) * scaleX));
+      const top = Math.max(0, Math.min(bH, (viewBox.y - minimapBounds.minY) * scaleY));
+      const width = Math.max(8, Math.min(bW - left, viewBox.width * scaleX));
+      const height = Math.max(8, Math.min(bH - top, viewBox.height * scaleY));
+
+      indicator.style.left = `${left}px`;
+      indicator.style.top = `${top}px`;
+      indicator.style.width = `${width}px`;
+      indicator.style.height = `${height}px`;
+    }
+
+    function moveViewBoxFromMinimap(e) {
+      if (!minimapBounds) return;
+      const minimapBody = document.getElementById('minimap-body');
+      const rect = minimapBody.getBoundingClientRect();
+      const clickX = e.clientX - rect.left;
+      const clickY = e.clientY - rect.top;
+
+      const bW = minimapBody.clientWidth || 172;
+      const bH = minimapBody.clientHeight || 110;
+
+      const targetSvgX = minimapBounds.minX + (clickX / bW) * minimapBounds.totalW;
+      const targetSvgY = minimapBounds.minY + (clickY / bH) * minimapBounds.totalH;
+
+      viewBox.x = targetSvgX - viewBox.width / 2;
+      viewBox.y = targetSvgY - viewBox.height / 2;
+
+      updateViewBox();
+      if (currentView === 'vertical') updateActiveDockItem();
+    }
+
+    const minimapBody = document.getElementById('minimap-body');
+    if (minimapBody) {
+      minimapBody.addEventListener('mousedown', (e) => {
+        e.stopPropagation();
+        isMinimapDragging = true;
+        moveViewBoxFromMinimap(e);
+      });
+    }
+
+    const minimapToggleBtn = document.getElementById('minimap-toggle-btn');
+    const minimapPanel = document.getElementById('minimap-container');
+    if (minimapToggleBtn && minimapPanel) {
+      minimapToggleBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        isMinimapCollapsed = !isMinimapCollapsed;
+        minimapPanel.classList.toggle('collapsed', isMinimapCollapsed);
+        minimapToggleBtn.innerHTML = isMinimapCollapsed 
+          ? `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="18 15 12 9 6 15"/></svg>`
+          : `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>`;
+      });
+    }
+
+    // ------------------------------------------------------------------
+    // EDITOR WEB INTEGRADO
+    // ------------------------------------------------------------------
+    const editorModal = document.getElementById('web-editor-modal');
+    const webEditorBtn = document.getElementById('web-editor-btn');
+    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const modalCancelBtn = document.getElementById('modal-cancel-btn');
+    const modalApplyBtn = document.getElementById('modal-apply-btn');
+
+    const tabJavaBtn = document.getElementById('tab-java-btn');
+    const tabJsonBtn = document.getElementById('tab-json-btn');
+    const tabGenBtn = document.getElementById('tab-gen-btn');
+
+    const tabJavaPanel = document.getElementById('tab-java-panel');
+    const tabJsonPanel = document.getElementById('tab-json-panel');
+    const tabGenPanel = document.getElementById('tab-gen-panel');
+
+    const javaInputArea = document.getElementById('java-input-area');
+    const jsonInputArea = document.getElementById('json-input-area');
+    const genOutputArea = document.getElementById('gen-output-area');
+
+    let activeEditorTab = 'java';
+
+    webEditorBtn.addEventListener('click', () => {
+      jsonInputArea.value = JSON.stringify(DIAGRAM, null, 2);
+      genOutputArea.value = generateJavaFromDiagram(DIAGRAM);
+      editorModal.classList.add('open');
+    });
+
+    function closeEditorModal() {
+      editorModal.classList.remove('open');
+    }
+
+    modalCloseBtn.addEventListener('click', closeEditorModal);
+    modalCancelBtn.addEventListener('click', closeEditorModal);
+
+    tabJavaBtn.addEventListener('click', () => {
+      activeEditorTab = 'java';
+      tabJavaBtn.classList.add('active');
+      tabJsonBtn.classList.remove('active');
+      tabGenBtn.classList.remove('active');
+      tabJavaPanel.style.display = 'flex';
+      tabJsonPanel.style.display = 'none';
+      tabGenPanel.style.display = 'none';
+      modalApplyBtn.textContent = 'Analizar código Java y actualizar';
+    });
+
+    tabJsonBtn.addEventListener('click', () => {
+      activeEditorTab = 'json';
+      tabJsonBtn.classList.add('active');
+      tabJavaBtn.classList.remove('active');
+      tabGenBtn.classList.remove('active');
+      tabJsonPanel.style.display = 'flex';
+      tabJavaPanel.style.display = 'none';
+      tabGenPanel.style.display = 'none';
+      modalApplyBtn.textContent = 'Aplicar cambios JSON';
+    });
+
+    tabGenBtn.addEventListener('click', () => {
+      activeEditorTab = 'gen';
+      tabGenBtn.classList.add('active');
+      tabJavaBtn.classList.remove('active');
+      tabJsonBtn.classList.remove('active');
+      tabGenPanel.style.display = 'flex';
+      tabJavaPanel.style.display = 'none';
+      tabJsonPanel.style.display = 'none';
+      genOutputArea.value = generateJavaFromDiagram(DIAGRAM);
+      modalApplyBtn.textContent = 'Copiar código Java';
+    });
+
+    modalApplyBtn.addEventListener('click', () => {
+      if (activeEditorTab === 'java') {
+        const javaCode = javaInputArea.value.trim();
+        if (!javaCode) {
+          alert('Por favor, ingresa código Java para analizar.');
+          return;
+        }
+        try {
+          const parsed = parseJavaClient(javaCode);
+          DIAGRAM = parsed;
+          document.getElementById('title-text').textContent = DIAGRAM.title;
+          nodePositions.clear();
+          render();
+          closeEditorModal();
+        } catch (err) {
+          alert('Error al analizar Java: ' + err.message);
+        }
+      } else if (activeEditorTab === 'json') {
+        try {
+          const newDiag = JSON.parse(jsonInputArea.value);
+          DIAGRAM = newDiag;
+          document.getElementById('title-text').textContent = DIAGRAM.title || 'Diagrama';
+          render();
+          closeEditorModal();
+        } catch (err) {
+          alert('JSON no válido: ' + err.message);
+        }
+      } else if (activeEditorTab === 'gen') {
+        navigator.clipboard.writeText(genOutputArea.value).then(() => {
+          alert('Código Java copiado al portapapeles con éxito.');
+        });
+      }
+    });
+
+    // Analizador Java en navegador con mapeo inteligente de miembros y variables
+    function parseJavaClient(code) {
+      const clean = code.replace(/\/\*[\s\S]*?\*\//g, '').replace(/\/\/.*/g, '');
+      const classRegex = /(?:public\s+|abstract\s+|final\s+)*(class|interface|record)\s+([A-Za-z0-9_]+)(?:\s+extends\s+([A-Za-z0-9_]+))?(?:\s+implements\s+([A-Za-z0-9_,\s]+))?\s*\{([^}]*)\}/g;
+
+      const nodes = [];
+      const connections = [];
+      const classMap = new Map();
+      let match;
+
+      while ((match = classRegex.exec(clean)) !== null) {
+        const kind = match[1];
+        const name = match[2];
+        const superClass = match[3] || null;
+        const ifaces = match[4] ? match[4].split(',').map(s => s.trim()) : [];
+        const body = match[5] || '';
+
+        const node = {
+          id: name,
+          label: name,
+          type: body.includes('static void main') ? 'main' : (kind === 'interface' ? 'interface' : 'class'),
+          superClass,
+          interfaces: ifaces,
+          body,
+          members: []
+        };
+
+        const fRegex = /(?:(private|protected|public)\s+)?(?:(static|final)\s+)*([A-Za-z0-9_<>]+)\s+([A-Za-z0-9_]+)\s*(?:=\s*[^;]+)?;/g;
+        let fm;
+        while ((fm = fRegex.exec(body)) !== null) {
+          if (['return', 'new', 'throw'].includes(fm[3])) continue;
+          node.members.push({
+            id: `${name}.${fm[4]}`,
+            name: `${fm[4]}: ${fm[3]}`,
+            kind: 'attribute',
+            visibility: fm[1] || 'package',
+            snippet: fm[0].trim(),
+            rawName: fm[4],
+            type: fm[3]
+          });
+        }
+
+        const cRegex = new RegExp(`(?:(public|protected|private)\\s+)?${name}\\s*\\(([^)]*)\\)\\s*\\{([^}]*)\\}`, 'g');
+        let cm;
+        while ((cm = cRegex.exec(body)) !== null) {
+          node.members.push({
+            id: `${name}.<init>`,
+            name: `${name}(${cm[2].trim()})`,
+            kind: 'constructor',
+            visibility: cm[1] || 'public',
+            snippet: cm[0].trim()
+          });
+        }
+
+        const mRegex = /(?:(public|protected|private)\s+)?(?:(static|abstract|final)\s+)*([A-Za-z0-9_<>\[\]]+)\s+([A-Za-z0-9_]+)\s*\(([^)]*)\)\s*(?:\{([^}]*)\}|;)/g;
+        let mm;
+        while ((mm = mRegex.exec(body)) !== null) {
+          if (mm[4] === name || ['if', 'while', 'for', 'switch'].includes(mm[4])) continue;
+          const isOverride = body.includes('@Override') && body.indexOf(mm[4]) > body.indexOf('@Override');
+          const mSnippet = (isOverride ? '@Override\n' : '') + mm[0].trim();
+          node.members.push({
+            id: `${name}.${mm[4]}`,
+            name: `${mm[4]}(${mm[5].trim()}): ${mm[3]}`,
+            kind: 'method',
+            visibility: mm[1] || 'public',
+            snippet: mSnippet,
+            rawName: mm[4]
+          });
+        }
+
+        classMap.set(name, node);
+        nodes.push(node);
+      }
+
+      // Conexiones miembro a miembro
+      nodes.forEach(node => {
+        if (node.superClass && classMap.has(node.superClass)) {
+          const sup = classMap.get(node.superClass);
+          const childCtor = node.members.find(m => m.kind === 'constructor');
+          const superCtor = sup.members.find(m => m.kind === 'constructor');
+
+          if (childCtor && superCtor && node.body.includes('super(')) {
+            connections.push({
+              source: childCtor.id,
+              target: superCtor.id,
+              type: 'inheritance',
+              label: 'invoca constructor super(...)',
+              snippet: 'super(...);'
+            });
+          }
+
+          node.members.filter(m => m.kind === 'method').forEach(cm => {
+            const sm = sup.members.find(m => m.kind === 'method' && m.rawName === cm.rawName);
+            if (sm && node.body.includes(`@Override`)) {
+              connections.push({
+                source: cm.id,
+                target: sm.id,
+                type: 'inheritance',
+                label: `@Override sobreescribe ${sm.rawName}()`,
+                snippet: cm.snippet
+              });
+            }
+          });
+
+          sup.members.filter(m => m.kind === 'attribute').forEach(sAttr => {
+            const consuming = node.members.filter(m => m.kind === 'method' && node.body.includes(sAttr.rawName));
+            consuming.forEach(cm => {
+              connections.push({
+                source: sAttr.id,
+                target: cm.id,
+                type: 'dataflow',
+                label: `atributo heredado consumido en ${cm.rawName}`,
+                snippet: `${sAttr.snippet || sAttr.name} -> usado en ${cm.rawName}()`
+              });
+            });
+          });
+        }
+
+        function resolveMethodForVar(varType, methodName) {
+          if (!varType) return null;
+          let curr = classMap.get(varType);
+          while (curr) {
+            const m = curr.members.find(x => x.kind === 'method' && x.rawName === methodName);
+            if (m) return { targetNode: curr, targetMethod: m };
+            if (curr.superClass && classMap.has(curr.superClass)) {
+              curr = classMap.get(curr.superClass);
+            } else {
+              break;
+            }
+          }
+          return null;
+        }
+
+        const newAssignRegex = /(?:([A-Za-z0-9_<>]+)\s+)?([A-Za-z0-9_]+)\s*=\s*new\s+([A-Za-z0-9_]+)\s*\([^)]*\);?/g;
+        let newMatch;
+        const handledCalls = new Set();
+
+        while ((newMatch = newAssignRegex.exec(node.body)) !== null) {
+          const varName = newMatch[2];
+          const targetClassName = newMatch[3];
+          const targetNode = classMap.get(targetClassName);
+
+          if (targetNode) {
+            const targetCtor = targetNode.members.find(m => m.kind === 'constructor') || targetNode.members[0];
+            const varMember = node.members.find(m => m.rawName === varName);
+            if (targetCtor && varMember) {
+              connections.push({
+                source: targetCtor.id,
+                target: varMember.id,
+                type: 'instantiation',
+                label: `new ${targetClassName}() entrega instancia a '${varName}'`,
+                snippet: newMatch[0].trim()
+              });
+            }
+          }
+        }
+
+        const callAssignRegex = /(?:([A-Za-z0-9_<>]+)\s+)?([A-Za-z0-9_]+)\s*=\s*([A-Za-z0-9_]+)\.([A-Za-z0-9_]+)\s*\([^)]*\);?/g;
+        let callAssignMatch;
+        while ((callAssignMatch = callAssignRegex.exec(node.body)) !== null) {
+          const resultVarName = callAssignMatch[2];
+          const varName = callAssignMatch[3];
+          const methodName = callAssignMatch[4];
+
+          const varMember = node.members.find(m => m.rawName === varName);
+          const resultMember = node.members.find(m => m.rawName === resultVarName);
+
+          if (varMember && varMember.type) {
+            const resolved = resolveMethodForVar(varMember.type, methodName);
+            if (resolved) {
+              handledCalls.add(`${varName}.${methodName}`);
+              connections.push({
+                source: varMember.id,
+                target: resolved.targetMethod.id,
+                type: 'call',
+                label: `'${varName}' invoca ${methodName}()`,
+                snippet: callAssignMatch[0].trim()
+              });
+              if (resultMember) {
+                connections.push({
+                  source: resolved.targetMethod.id,
+                  target: resultMember.id,
+                  type: 'return',
+                  label: `retorna valor a '${resultVarName}'`,
+                  snippet: `${resultVarName} = ${varName}.${methodName}(...);`
+                });
+              }
+            }
+          }
+        }
+
+        const directCallRegex = /([A-Za-z0-9_]+)\.([A-Za-z0-9_]+)\s*\([^)]*\);?/g;
+        let directCallMatch;
+        while ((directCallMatch = directCallRegex.exec(node.body)) !== null) {
+          const varName = directCallMatch[1];
+          const methodName = directCallMatch[2];
+
+          if (handledCalls.has(`${varName}.${methodName}`)) continue;
+          if (['System', 'out', 'this'].includes(varName)) continue;
+
+          const varMember = node.members.find(m => m.rawName === varName);
+          if (varMember && varMember.type) {
+            const resolved = resolveMethodForVar(varMember.type, methodName);
+            if (resolved) {
+              handledCalls.add(`${varName}.${methodName}`);
+              connections.push({
+                source: varMember.id,
+                target: resolved.targetMethod.id,
+                type: 'call',
+                label: `'${varName}' invoca ${methodName}()`,
+                snippet: directCallMatch[0].trim()
+              });
+            }
+          }
+        }
+      });
+
+      return {
+        title: 'Diagrama compilado desde la web',
+        description: 'Generado en tiempo real desde el editor web de Code-Chords.',
+        defaultView: 'blocks',
+        nodes,
+        connections
+      };
+    }
+
+    function generateJavaFromDiagram(diag) {
+      let code = '// Código generado automáticamente por Code-Chords\n\n';
+      (diag.nodes || []).forEach(node => {
+        code += `public class ${node.label} {\n`;
+        (node.members || []).forEach(m => {
+          if (m.kind === 'attribute' || m.kind === 'variable') {
+            const parts = m.name.split(':');
+            const attrName = (parts[0] || 'campo').trim();
+            const attrType = (parts[1] || 'String').trim();
+            code += `    ${m.visibility || 'protected'} ${attrType} ${attrName};\n`;
+          } else if (m.kind === 'constructor') {
+            code += `    public ${m.name} {\n        // Constructor\n    }\n\n`;
+          } else if (m.kind === 'method') {
+            code += `    public ${m.name.includes(':') ? m.name.split(':')[1].trim() : 'void'} ${m.name.split(':')[0].trim()} {\n        // Implementación\n    }\n\n`;
+          }
+        });
+        code += '}\n\n';
+      });
+      return code;
+    }
+
+    if (currentView === 'vertical') {
+      viewBox = { x: 0, y: 0, width: 1600, height: 950 };
+      updateViewBox();
+    }
+    setActiveViewButton(currentView);
+    render();
+  </script>
+</body>
+</html>

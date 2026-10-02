@@ -1,0 +1,31 @@
+{
+  "name": "code-chords",
+  "version": "1.0.0",
+  "description": "Visualizador y generador interactivo de diagramas de acordes relacionales entre componentes, capas, clases y módulos de software.",
+  "type": "module",
+  "main": "bin/code-chords.mjs",
+  "bin": {
+    "code-chords": "./bin/code-chords.mjs"
+  },
+  "scripts": {
+    "validate": "node bin/code-chords.mjs validate",
+    "render": "node bin/code-chords.mjs render",
+    "scan": "node bin/code-chords.mjs scan-java"
+  },
+  "keywords": [
+    "diagram",
+    "code-visualization",
+    "ast",
+    "java",
+    "oop",
+    "chords",
+    "software-architecture",
+    "svg",
+    "interactive"
+  ],
+  "author": "Code-Chords Contributors",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
