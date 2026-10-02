@@ -1,6 +1,10 @@
 # Code-Chords
 
+[![Demostración en vivo](https://img.shields.io/badge/Demo_en_vivo-ferb22.github.io%2Fcode--chords-22c55e?style=for-the-badge&logo=githubpages&logoColor=white)](https://ferb22.github.io/code-chords/)
+
 Generador y visor interactivo autónomo (HTML/SVG) para visualizar **conexiones relacionales a escala atómica** en arquitecturas de software, sistemas distribuidos, capas de aplicación y código fuente. Inspirado en la visualización bíblica de referencias cruzadas y en el contrapunto polifónico.
+
+> 🌐 **Prueba la demostración interactiva en línea sin instalar nada:** [ferb22.github.io/code-chords](https://ferb22.github.io/code-chords/)
 
 A diferencia de los diagramas UML tradicionales que representan sistemas como cajas opacas conectadas por flechas abstractas, **Code-Chords** desciende al detalle granular: expone las partes internas de cada entidad (atributos, métodos, constructores, funciones, puertos, endpoints o variables de estado) y las vincula con curvas de Bézier fluidas (*Chord flow*) o arcos parabólicos espectrales (*Bible Arc Spectrum*). Permite responder con rigor visual e instantáneo a la pregunta directriz: **«¿Quién llama a quién y qué le entrega?»** en cualquier ámbito de software.
 
